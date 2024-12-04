@@ -69,7 +69,7 @@ def extrair_link():
     )
     hwnd=get_hwnd(driver)
     driverheadless=FakeHeadless(hwnd)
-    driverheadless.start_headless_mode(width=None, height=None, distance_from_taskbar=1)
+    #driverheadless.start_headless_mode(width=None, height=None, distance_from_taskbar=1)
     screenshot1=lambda: cv2_imshow_single(open_image_in_cv(driver.get_screenshot_as_png()),title='sele1',killkeys="ctrl+alt+q")
 
     driver.maximize_window()
@@ -140,4 +140,4 @@ def extrair_link():
     session.close()
 
 
-# 0,2
+# 0,2 imagem por segundo
