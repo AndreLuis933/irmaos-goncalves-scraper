@@ -4,7 +4,6 @@ import time
 from contextlib import contextmanager
 import pandas as pd
 import undetected_chromedriver as uc
-from PrettyColorPrinter import add_printer
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -13,10 +12,10 @@ from a_selenium2df import get_df
 from datetime import datetime, timezone
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Date, LargeBinary
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
-import pandas as pd
-import time
-#add_printer(True)
-
+from math import prod
+from PoorMansHeadless import FakeHeadless
+from a_cv_imwrite_imread_plus import open_image_in_cv
+from cv2imshow.cv2imshow import cv2_imshow_single
 
 Base = declarative_base()
 
@@ -30,112 +29,115 @@ class Imagem(Base):
     # Relacionamento com Produto
     produto = relationship("Produto", back_populates="imagem")
 
+@contextmanager
+def suppress_output():
+    """Suprime stdout e stderr temporariamente."""
+    with open(os.devnull, 'w') as devnull:
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        sys.stdout = devnull
+        sys.stderr = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+
+with suppress_output():
+    folder_path = "c:\\download2thisfolderchromedriver"
+    chromedriver_path = download_undetected_chromedriver(
+        folder_path,
+        undetected=True,
+        arm=False,
+        force_update=True
+    )
+
+def get_hwnd(driver):
+    while True:
+        try:
+            allhwnds=[x for x in FakeHeadless.get_all_windows_with_handle() if x.pid == driver.browser_pid]
+            return sorted(allhwnds, key=lambda x: prod(x.dim_win), reverse=True)[0].hwnd
+        except Exception:
+            continue
 
 def extrair_link():
-    @contextmanager
-    def suppress_output():
-        """Suprime stdout e stderr temporariamente."""
-        with open(os.devnull, 'w') as devnull:
-            old_stdout = sys.stdout
-            old_stderr = sys.stderr
-            sys.stdout = devnull
-            sys.stderr = devnull
-            try:
-                yield
-            finally:
-                sys.stdout = old_stdout
-                sys.stderr = old_stderr
+    options = uc.ChromeOptions()
+    driver = uc.Chrome(
+        options=options,
+        driver_executable_path=chromedriver_path,
+        headless=False
+    )
+    hwnd=get_hwnd(driver)
+    driverheadless=FakeHeadless(hwnd)
+    driverheadless.start_headless_mode(width=None, height=None, distance_from_taskbar=1)
+    screenshot1=lambda: cv2_imshow_single(open_image_in_cv(driver.get_screenshot_as_png()),title='sele1',killkeys="ctrl+alt+q")
 
-    with suppress_output():
-        folder_path = "c:\\download2thisfolderchromedriver"
-        chromedriver_path = download_undetected_chromedriver(
-            folder_path,
-            undetected=True,
-            arm=False,
-            force_update=True
-        )
-
-    def criar_navegador():
-        options = uc.ChromeOptions()
-        driver = uc.Chrome(
-            options=options,
-            driver_executable_path=chromedriver_path,
-            headless=False
-        )
-        driver.maximize_window()
-        return driver
+    driver.maximize_window()
 
     def obter_dataframe(query="*"):
         """Obtém um DataFrame com base em elementos da página."""
         return get_df(driver, By, WebDriverWait, EC, queryselector=query, with_methods=True)
 
-    # Configuração do banco de dados
     engine = create_engine("sqlite:///produtos.db")
     Session = sessionmaker(bind=engine)
     session = Session()
 
-
-    # Consulta inicial à tabela 'produtos'
-    query = "SELECT id, link FROM produtos"
+    query = """
+    SELECT id, link 
+    FROM produtos
+    WHERE id NOT IN (SELECT produto_id FROM imagens);
+    """
     comparacao = pd.read_sql_query(query, engine)
-    comparacao = comparacao.head(2)
-
-    driver = criar_navegador()
-
+    
+    comparacao.rename(columns={"id": "produto_id",},inplace=True)
     start_time = time.time()
+
+    #comparacao = comparacao.head(20)
 
     for index, row in comparacao.iterrows():
         link = row['link']
         driver.get(link)
-        try:
-            while "Too Many Requests" in driver.page_source:
-                print("Erro 429 detectado: Muitas requisições enviadas.")
-                time.sleep(10)
-                driver.quit()
-                driver = criar_navegador()
+        
+        while "Too Many Requests" in driver.page_source:
+            print("Erro 429 detectado: Muitas requisições enviadas.")
+            time.sleep(10)
+            driver.get(link)
+
+        tentativas = 0
+        max_tentativas = 5  # Limite de tentativas
+
+        while tentativas < max_tentativas:
             try:
-                while True:
-                    # Esperar até que a imagem do produto esteja presente
-                    WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, "//img[contains(@src, 'produto')]"))
-                    )
-                    break
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//img[contains(@src, 'produto')]"))
+                )
+                break  # Sai do loop se a imagem aparecer
             except Exception as e:
-                print('Nao achou o link da imagem')
-                time.sleep(10)
-                driver.quit()
-                driver = criar_navegador()
+                print(f"Tentativa {tentativas + 1}: Não achou o link da imagem")
+                tentativas += 1
+                time.sleep(5)  # Aguarda antes de tentar novamente
+                driver.get(link)  # Recarrega a página
+        else:
+            print("Falha ao carregar a imagem após várias tentativas.")
+            
+        df = obter_dataframe('img')
+        imagem = df.loc[df.aa_src.str.contains('produto', na=False), 'aa_src'].iloc[0]
+        comparacao.at[index, 'link_imagem'] = imagem
+        
+        linha = comparacao.loc[[index]].copy()
+        linha['data_atualizacao'] = datetime.now(timezone.utc).date()
+        
+        linha.drop(columns=['link']).to_sql(
+            "imagens", con=engine, if_exists="append", index=False
+        )
 
-            # Obter DataFrame de imagens da página
-            df = obter_dataframe('img')
-
-            imagem = df.loc[df.aa_src.str.contains('produto', na=False), 'aa_src'].iloc[0]
-            comparacao.at[index, 'Imagem'] = imagem
-            time.sleep(2)
-        except Exception as e:
-            print(f"Erro ao processar o link {link}: {e}")
-            time.sleep(3)
-            driver.quit()
-            driver = criar_navegador()
+        time.sleep(2)
 
     elapsed_time = time.time() - start_time
-    print(f"Tempo para liberação: {elapsed_time:.2f} segundos")
+    print(f"Tempo Que ficou trabalhando: {elapsed_time:.2f} segundos")
 
     driver.quit()
-
-    # Renomear as colunas do DataFrame para corresponder às do banco de dados
-    comparacao['link'] = None
-    comparacao.rename(
-        columns={
-            "id": "produto_id",
-            "Imagem": "link_imagem",
-            'link': 'conteudo' 
-        },  
-        inplace=True
-    )
-    # Adicionar a coluna de data_atualizacao
-    comparacao['data_atualizacao'] = datetime.now(timezone.utc).date()
-    comparacao.to_sql("imagens", con=engine, if_exists="replace", index=False)
     session.close()
+
 
 # 0,2

@@ -6,8 +6,7 @@ import time
 def main():
     #baixar_site()
     extrair_link()
-    baixar_imagem()
-    time.sleep(6)
+    #baixar_imagem()
 
 if __name__ == "__main__":
     main()
