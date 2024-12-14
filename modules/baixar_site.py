@@ -1,12 +1,12 @@
-from bs4 import BeautifulSoup
-import requests
-import logging
 import json
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.orm import declarative_base
+import logging
 from datetime import datetime, timezone
-from sqlalchemy import Date
+
+import requests
+from bs4 import BeautifulSoup
+from sqlalchemy import (Column, Date, Float, ForeignKey, Integer, String,
+                        create_engine)
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 Base = declarative_base()
 

@@ -1,9 +1,10 @@
-import aiohttp
 import asyncio
 import time
+
+import aiohttp
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import pandas as pd
 from sqlalchemy.sql import text
 
 # Cabeçalhos HTTP para as requisições
