@@ -2,40 +2,22 @@ import os
 import sys
 import time
 from contextlib import contextmanager
-from datetime import datetime, timezone
 from math import prod
 
-import pandas as pd
 import undetected_chromedriver as uc
 from a_selenium2df import get_df
-from auto_download_undetected_chromedriver import \
-    download_undetected_chromedriver
+from auto_download_undetected_chromedriver import download_undetected_chromedriver
 from PoorMansHeadless import FakeHeadless
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from sqlalchemy import (Column, Date, ForeignKey, Integer, LargeBinary, String,
-                        create_engine)
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
-
-Base = declarative_base()
-
-
-class Imagem(Base):
-    __tablename__ = 'imagens'
-    produto_id = Column(Integer, ForeignKey('produtos.id'), primary_key=True)  # Chave primária e estrangeira
-    link_imagem = Column(String, nullable=False)  # URL da imagem
-    conteudo = Column(LargeBinary, nullable=True)  # Conteúdo da imagem (BLOB)
-    data_atualizacao = Column(Date, default=lambda: datetime.now(timezone.utc).date(), onupdate=lambda: datetime.now(timezone.utc).date())
-
-    # Relacionamento com Produto
-    produto = relationship("Produto", back_populates="imagem")
+from database.db_operations import salvar_dados, get_dataframe
 
 
 @contextmanager
 def suppress_output():
     """Suprime stdout e stderr temporariamente."""
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         old_stderr = sys.stderr
         sys.stdout = devnull
@@ -50,17 +32,18 @@ def suppress_output():
 with suppress_output():
     folder_path = "c:\\download2thisfolderchromedriver"
     chromedriver_path = download_undetected_chromedriver(
-        folder_path,
-        undetected=True,
-        arm=False,
-        force_update=True
+        folder_path, undetected=True, arm=False, force_update=True
     )
 
 
 def get_hwnd(driver):
     while True:
         try:
-            allhwnds = [x for x in FakeHeadless.get_all_windows_with_handle() if x.pid == driver.browser_pid]
+            allhwnds = [
+                x
+                for x in FakeHeadless.get_all_windows_with_handle()
+                if x.pid == driver.browser_pid
+            ]
             return sorted(allhwnds, key=lambda x: prod(x.dim_win), reverse=True)[0].hwnd
         except Exception:
             continue
@@ -69,9 +52,7 @@ def get_hwnd(driver):
 def extrair_link_selenium():
     options = uc.ChromeOptions()
     driver = uc.Chrome(
-        options=options,
-        driver_executable_path=chromedriver_path,
-        headless=False
+        options=options, driver_executable_path=chromedriver_path, headless=False
     )
     hwnd = get_hwnd(driver)
     driverheadless = FakeHeadless(hwnd)
@@ -82,25 +63,20 @@ def extrair_link_selenium():
 
     def obter_dataframe(query="*"):
         """Obtém um DataFrame com base em elementos da página."""
-        return get_df(driver, By, WebDriverWait, EC, queryselector=query, with_methods=True)
+        return get_df(
+            driver, By, WebDriverWait, EC, queryselector=query, with_methods=True
+        )
 
-    engine = create_engine("sqlite:///produtos.db")
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    query = """
-    SELECT id, link
-    FROM produtos
-    WHERE id NOT IN (SELECT produto_id FROM imagens);
-    """
-    comparacao = pd.read_sql_query(query, engine)
+    comparacao = get_dataframe(
+        """SELECT id, link FROM produtos WHERE id NOT IN (SELECT produto_id FROM imagens);"""
+    )
     comparacao.rename(columns={"id": "produto_id"}, inplace=True)
     start_time = time.time()
 
-    # comparacao = comparacao.head(20)
+    comparacao = comparacao.head(1)
 
     for index, row in comparacao.iterrows():
-        link = row['link']
+        link = row["link"]
         driver.get(link)
         while "Too Many Requests" in driver.page_source:
             print("Erro 429 detectado: Muitas requisições enviadas.")
@@ -113,7 +89,9 @@ def extrair_link_selenium():
         while tentativas < max_tentativas:
             try:
                 WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, "//img[contains(@src, 'produto')]"))
+                    EC.presence_of_element_located(
+                        (By.XPATH, "//img[contains(@src, 'produto')]")
+                    )
                 )
                 break  # Sai do loop se a imagem aparecer
             except Exception:
@@ -123,14 +101,14 @@ def extrair_link_selenium():
                 driver.get(link)  # Recarrega a página
         else:
             print("Falha ao carregar a imagem após várias tentativas.")
-        df = obter_dataframe('img')
-        imagem = df.loc[df.aa_src.str.contains('produto', na=False), 'aa_src'].iloc[0]
-        comparacao.at[index, 'link_imagem'] = imagem
+        df = obter_dataframe("img")
+        imagem = df.loc[df.aa_src.str.contains("produto", na=False), "aa_src"].iloc[0]
+        comparacao.at[index, "link_imagem"] = imagem
         linha = comparacao.loc[[index]].copy()
-        linha['data_atualizacao'] = datetime.now(timezone.utc).date()
-        linha.drop(columns=['link']).to_sql(
-            "imagens", con=engine, if_exists="append", index=False
-        )
+        linha = linha.drop(columns=["link"])
+        linha = linha.iloc[0]
+        linha["produto_id"] = int(linha["produto_id"])
+        salvar_dados([tuple(linha)], "imagens")
 
         time.sleep(2)
 
@@ -138,5 +116,6 @@ def extrair_link_selenium():
     print(f"Tempo Que ficou trabalhando: {elapsed_time:.2f} segundos")
 
     driver.quit()
-    session.close()
+
+
 # 0,2 imagem por segundo

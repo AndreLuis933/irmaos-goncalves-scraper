@@ -1,4 +1,9 @@
-*.xlsx
+resto/
+produtos.db
+seleniumpictures/
+cookies.json
+atual.ipynb
+descriçao-projeto.txt
 __pycache__/
 
 # Environments

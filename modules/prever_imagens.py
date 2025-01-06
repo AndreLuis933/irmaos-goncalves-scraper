@@ -1,35 +1,18 @@
 import asyncio
 from collections import Counter
-import os
 import re
 import time
 
 import aiohttp
-import pandas as pd
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import text
+from database.db_operations import salvar_dados, get_dataframe
 
 # Cabeçalhos HTTP para as requisições
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/'
-    '537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/"
+    "537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }
 MODIFICADORES = ["_1", "_99_1", "_1_1", "_1_3", "_99_3"]
 EXTENSOES = [".jpg", ".png"]
-
-base_dir = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(base_dir, "produtos.db")
-
-engine = create_engine(f"sqlite:///{db_path}")
-Session = sessionmaker(bind=engine)
-session = Session()
-query = """
-SELECT id, link
-FROM produtos
-WHERE id NOT IN (SELECT produto_id FROM imagens);
-"""
 
 
 def extrair_id(link):
@@ -38,22 +21,6 @@ def extrair_id(link):
     if match:
         return match.group(1)
     return None
-
-
-def salvar_imagem_no_banco(lista_imagens):
-    """salva as imagens no banco de dados
-
-    Args:
-        lista_imagens (list): lista com links de imagems para serem salvas
-    """
-    try:
-        query = text("INSERT INTO imagens (link_imagem, produto_id) VALUES (:url, :id)")
-        session.execute(query, [{"url": url, "id": id} for id, url in lista_imagens])
-        session.commit()
-        print(f"Pacote de {len(lista_imagens)} imagens salvo com sucesso no banco.")
-    except Exception as e:
-        session.rollback()
-        print(f"Erro ao salvar o pacote no banco: {e}")
 
 
 async def testar_link(total_links, recovery_time=5, pacote_size=50):
@@ -88,7 +55,7 @@ async def testar_link(total_links, recovery_time=5, pacote_size=50):
                     print(
                         f"Iniciando requisição {requisisoes_feitas} de {len(total_links)}"
                     )
-                    qnt_requests.append((id,link))
+                    qnt_requests.append((id, link))
 
                     async with nav.head(url, headers=HEADERS) as response:
                         status = response.status
@@ -113,11 +80,11 @@ async def testar_link(total_links, recovery_time=5, pacote_size=50):
                     print(status)
 
             if len(pacote) >= pacote_size:
-                salvar_imagem_no_banco(pacote)
+                salvar_dados(pacote, "imagens")
                 pacote.clear()
 
         if pacote:
-            salvar_imagem_no_banco(pacote)
+            salvar_dados(pacote, "imagens")
 
     tempo_gasto = time.time() - inicio
     print(f"Todas as requisições concluídas. Tempo total: {tempo_gasto:.2f} segundos")
@@ -127,11 +94,12 @@ async def testar_link(total_links, recovery_time=5, pacote_size=50):
     filtered_counts = {key: value for key, value in counts.items() if value == 10}
 
     print(filtered_counts)
-    
 
 
 def prever_imagem():
-    df = pd.read_sql_query(query, engine)
+    df = get_dataframe(
+        """SELECT id, link FROM produtos WHERE id NOT IN (SELECT produto_id FROM imagens);"""
+    )
     df = df.head(20)
     asyncio.run(testar_link(total_links=df))
 
