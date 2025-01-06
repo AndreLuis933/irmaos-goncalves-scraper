@@ -100,7 +100,8 @@ def prever_imagem():
     df = get_dataframe(
         """SELECT id, link FROM produtos WHERE id NOT IN (SELECT produto_id FROM imagens);"""
     )
-    df = df.head(20)
+    # somente para testar a funcionalidade
+    df = df.head(200)
     asyncio.run(testar_link(total_links=df))
 
 
