@@ -1,24 +1,28 @@
 import os
-from sqlalchemy import (
-    create_engine,
-    Column,
-    Integer,
-    String,
-    Float,
-    Date,
-    ForeignKey,
-    LargeBinary,
-)
-from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from datetime import datetime, timezone
 
-# Configuração do banco de dados
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(BASE_DIR, "produtos.db")
-ENGINE = create_engine(f"sqlite:///{DB_PATH}")
+from dotenv import load_dotenv
+from sqlalchemy import Column, Date, Float, ForeignKey, Integer, LargeBinary, String, create_engine, text
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+
+load_dotenv()
+
+Postegres = False
+
+DATABASE_URL = (
+    f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+    if Postegres
+    else "sqlite:///produtos.db"
+)
+
+
+# Criação do engine e da sessão
+ENGINE = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=ENGINE)
 
 Base = declarative_base()
+
+"ProdutosIG"
 
 
 class Produto(Base):
@@ -26,6 +30,7 @@ class Produto(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String, nullable=False)
     link = Column(String, unique=True, nullable=False)
+    categoria = Column(String, nullable=True)
     data_atualizacao = Column(
         Date,
         default=lambda: datetime.now(timezone.utc).date(),
@@ -33,9 +38,7 @@ class Produto(Base):
         nullable=False,
     )
     imagem = relationship("Imagem", back_populates="produto", uselist=False)
-    historico_precos = relationship(
-        "HistoricoPreco", back_populates="produto", cascade="all, delete-orphan"
-    )
+    historico_precos = relationship("HistoricoPreco", back_populates="produto", cascade="all, delete-orphan")
 
 
 class HistoricoPreco(Base):
@@ -62,3 +65,12 @@ class Imagem(Base):
         nullable=False,
     )
     produto = relationship("Produto", back_populates="imagem")
+
+
+def init_db():
+    Base.metadata.create_all(ENGINE)
+
+
+if __name__ == "__main__":
+    init_db()
+

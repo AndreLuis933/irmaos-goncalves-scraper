@@ -1,19 +1,22 @@
+import json
 import os
 import sys
 from contextlib import contextmanager
+from datetime import datetime, timezone
+
+import inquirer
 import undetected_chromedriver as uc
+from a_selenium2df import get_df
+from auto_download_undetected_chromedriver import download_undetected_chromedriver
+from PrettyColorPrinter import add_printer
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from auto_download_undetected_chromedriver import download_undetected_chromedriver
-from a_selenium2df import get_df
-import json
-from datetime import datetime, timezone
-import inquirer
 
+add_printer()
 regioes = [
-    "Ariquemes", "Cacoal", "Guajará-Mirim", "Jaru", "Ji-Paraná",
-    "Ouro Preto do Oeste", "Pimenta Bueno", "Porto Velho",
+    "Ariquemes", "Cacoal",  "Jaru", "Ji-Paraná",
+    "Ouro Preto do Oeste", "Porto Velho",
     "Rolim de Moura", "Vilhena"
 ]
 
@@ -72,7 +75,7 @@ df = obter_dataframe("button, select, option")
 
 df.loc[df.aa_localName == "select"].se_click.iloc[0]()
 
-# lista com as regioes ['Ariquemes', 'Cacoal', 'Guajará-Mirim', 'Jaru', 'Ji-Paraná', 'Ouro Preto do Oeste', 'Pimenta Bueno', 'Porto Velho', 'Rolim de Moura', 'Vilhena']
+# lista com as regioes ['Ariquemes', 'Cacoal', 'Jaru', 'Ji-Paraná', 'Ouro Preto do Oeste', 'Pimenta Bueno', 'Porto Velho', 'Rolim de Moura', 'Vilhena']
 
 df.loc[
     (df.aa_localName == "option")

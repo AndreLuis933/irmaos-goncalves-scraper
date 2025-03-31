@@ -1,10 +1,13 @@
 resto/
-produtos.db
+*.db
 seleniumpictures/
 cookies.json
 atual.ipynb
 descriçao-projeto.txt
 __pycache__/
+.vscode
+.conda
+*ipynb
 
 # Environments
 .env
