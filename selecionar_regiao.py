@@ -8,12 +8,10 @@ import inquirer
 import undetected_chromedriver as uc
 from a_selenium2df import get_df
 from auto_download_undetected_chromedriver import download_undetected_chromedriver
-from PrettyColorPrinter import add_printer
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-add_printer()
 regioes = [
     "Ariquemes", "Cacoal",  "Jaru", "Ji-Paraná",
     "Ouro Preto do Oeste", "Porto Velho",

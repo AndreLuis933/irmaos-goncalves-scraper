@@ -12,7 +12,6 @@ import undetected_chromedriver as uc
 from a_selenium2df import get_df
 from auto_download_undetected_chromedriver import download_undetected_chromedriver
 from PoorMansHeadless import FakeHeadless
-from PrettyColorPrinter import add_printer
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
@@ -20,8 +19,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.exceptions import ReadTimeoutError
 
 from database.db_operations import get_link_produto, images_id, salvar_dados
-
-add_printer(1)
 
 
 @contextmanager
