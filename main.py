@@ -7,9 +7,9 @@ from scraper.images.get_link import extrair_link_restante
 
 
 async def main():
-    await baixar_site()
-    # extrair_link_restante(20)
-    # await baixar_imagem(20000)
+    await baixar_site() # pega os produtos e preços e a maior parte das imagens correspondentes
+    # extrair_link_restante(20) # pega o restante das imagens
+    #await baixar_imagem(20000) # faz o download das imagens
 
 
 if __name__ == "__main__":

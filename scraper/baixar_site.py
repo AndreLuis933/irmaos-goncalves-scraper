@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from database.db_operations import (
     execute_today,
     get_count_products_without_images,
+    get_image_links,
     get_null_product_category,
     price_change,
     salvar_dados,
@@ -140,33 +141,36 @@ async def baixar_site():
     # se ja execultou hoje, nao execultar novamente
     if execute_today():
         print(execute_today().data_atualizacao)
-        return
+        #return
 
     cookies = carregar_cookies()
     url_base = "https://www.irmaosgoncalves.com.br"
     urls_folha, urls_raiz, nomes_arquivos = obter_categorias_e_processar(url_base)
     urls = urls_folha
 
-    # se tiver mais de 100 produtos sem categoria baixar os produtos com categoria
+    # se tiver menos de 100 produtos sem categoria baixar os produtos sem a categoria para ir mais rapido
+    logging.info(f"Produtos sem categoria: {get_null_product_category()}")
     if get_null_product_category() < 100:
         urls = urls_raiz
         nomes_arquivos = len(urls) * [None]
 
+    # fazer as requests de forma assíncrona
     async with aiohttp.ClientSession() as session:
         tasks = [process_url(session, url, cookies, nome) for url, nome in zip(urls, nomes_arquivos)]
         resultados = await asyncio.gather(*tasks)
 
-    produtos_para_salvar = list(chain.from_iterable(produtos for produtos, _ in resultados))
-    precos_para_salvar = list(chain.from_iterable(precos for _, precos in resultados))
+    # separa as listas que estavam assim [(produtos, precos), (produtos, precos)] para uma com todos os produtos e outra com todos os preços  # noqa: E501
+    produtos_para_salvar = [produto for produtos, _ in resultados for produto in produtos]
+    precos_para_salvar = [preco for _, precos in resultados for preco in precos]
 
     salvar_dados(produtos_para_salvar, "produtos")
 
     salvar_dados(precos_para_salvar, "historico_preco")
 
     # se tiver mais de 5000 sem imagens baixar as imagens
-    if get_count_products_without_images() > 5000:
-        print(get_count_products_without_images())
+    logging.info(f"Produtos sem imagens: {get_count_products_without_images()}")
+    if get_count_products_without_images() > 20:
         get_images(urls_raiz)
 
-    #ver quantos produtos mudaram de preço desde a primeira execução
+    # ver quantos produtos mudaram de preço desde a primeira execução
     price_change()

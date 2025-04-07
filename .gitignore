@@ -1,7 +1,6 @@
 resto/
 *.db
 seleniumpictures/
-cookies.json
 atual.ipynb
 descriçao-projeto.txt
 __pycache__/

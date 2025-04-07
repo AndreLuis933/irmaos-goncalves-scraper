@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 import pandas as pd
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, not_
 
 from .db_setup import ENGINE, HistoricoPreco, Imagem, Produto, Session
 
@@ -10,6 +10,15 @@ def get_dataframe(query):
     """Retorna um DataFrame do Pandas com os resultados da consulta SQL."""
     return pd.read_sql_query(query, ENGINE)
 
+def get_image_links():
+    with Session() as session:
+        imagens = (
+            session.query(Imagem)
+            .filter(Imagem.conteudo.is_(None))
+            .filter(not_(Imagem.link_imagem.like("%removebg-preview%")))
+            .all()
+        )
+        return [imagem.link_imagem for imagem in imagens]
 
 def produtos(dados, session):
     objetos = []

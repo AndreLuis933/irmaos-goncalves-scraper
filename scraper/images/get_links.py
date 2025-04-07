@@ -16,6 +16,7 @@ from selenium.common.exceptions import StaleElementReferenceException, TimeoutEx
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
 from selenium.webdriver.support.wait import WebDriverWait
+from tqdm import tqdm
 from urllib3.exceptions import ReadTimeoutError
 
 from database.db_operations import get_link_produto, images_id, salvar_dados
@@ -135,10 +136,17 @@ def processar_e_salvar(row, imagens):
     return True
 
 
+def calculate_delay(attempt, base_delay=60, increment=30, max_delay=600, jitter_factor=0.1):
+    delay = min(base_delay + (attempt * increment), max_delay)
+    jitter = random.uniform(0, delay * jitter_factor)
+    return delay + jitter
+
+
 def process_page(driver, url, imagens, max_retries=5):
     try:
-        for attempt in range(max_retries):
-            logging.info(f"Tentativa {attempt + 1} de carregar a página: {url}")
+        for attempt in range(1, max_retries + 1):
+            delay = calculate_delay(attempt)
+            logging.info(f"Tentativa {attempt } de carregar a página: {url}")
             driver.set_page_load_timeout(300)
             driver.get(url)
 
@@ -153,8 +161,11 @@ def process_page(driver, url, imagens, max_retries=5):
             driver.execute_script("window.scrollTo(0, 0);")
 
             if check_for_noimage(driver):
+                if attempt == max_retries:
+                    continue
                 logging.warning("Página com no image.")
-                time.sleep((2**attempt) * 10)
+                logging.info(f"Esperando {delay:.2f} segundos.")
+                time.sleep(delay)
                 continue
 
             df = obter_dataframe(driver, CSS_SELECTOR)
@@ -175,10 +186,11 @@ def process_page(driver, url, imagens, max_retries=5):
                 f"{num_falhas} de {len(processed)} imagens não foram processadas. Total de imagens válidas: {len(imagens)}"
             )
 
-            time.sleep((2**attempt) * 10)
+            logging.info(f"Esperando {delay:.2f} segundos.")
+            time.sleep(delay)
 
     except (TimeoutException, StaleElementReferenceException, ReadTimeoutError) as e:
-        logging.exception(f"Erro ao processar a página: {str(e)}")
+        logging.exception(f"Erro ao processar a página: {e}")
 
     logging.error(f"Falha ao processar a página após {max_retries} tentativas.")
     return False
@@ -187,13 +199,14 @@ def process_page(driver, url, imagens, max_retries=5):
 def get_images(urls):
     imagens = []
     inicio = time.time()
-    with get_driver() as driver:
+    with get_driver() as driver, tqdm(total=len(urls), desc="Progresso") as pbar:
         for url in urls:
             if process_page(driver, url, imagens):
                 salvar_dados(imagens, "imagens")
                 imagens.clear()
             else:
                 logging.warning(f"Pulando URL devido a falhas repetidas: {url}")
+            pbar.update(1)
 
     fim = time.time()
     logging.info(f"Tempo de execução: {fim - inicio:.2f} segundos.")
