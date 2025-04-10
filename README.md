@@ -133,7 +133,7 @@ erDiagram
     ```bash
     python selecionar_regiao.py
     ```
-2.  Vá no arquivo db_setup.py dentro da pasta database e altere a variável Postgres para o seu banco de dados e execute o arquivo db_setup.py para criar as tabelas no banco de dados selecionado.
+2.  Vá no arquivo db_setup.py e execulte ele para criar as tabelas no banco de dados, se for usar postegres defina a url de conexão no arquivo de variaves de ambiente.
 
 3.  Após selecionar a região e o banco de dados, execute o script principal:
     ```bash

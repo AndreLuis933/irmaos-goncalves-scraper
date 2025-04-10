@@ -202,7 +202,7 @@ def get_images():
     _, urls, _ = get_categories(url_base)
     # se tiver mais de 5000 sem imagens baixar as imagens
     logging.info(f"Produtos sem imagens: {get_count_products_without_images()}")
-    if get_count_products_without_images() > 5000:
+    if get_count_products_without_images() < 5000:
         return
 
     logging.info("Pegando o link das imagens...")

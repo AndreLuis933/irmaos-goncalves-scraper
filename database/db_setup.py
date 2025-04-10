@@ -7,15 +7,11 @@ from sqlalchemy.sql import func
 
 load_dotenv()
 
-# definir se é para usar o postegres ou sqlite, se for usar o postegres presiza colocar um arquivo .env na raiz do projeto com os dados do banco de dados  # noqa: E501
-Postegres = True
+# se for usar postgres: o DATABASE_URL tem que ser definido no .env
+DATABASE_URL = os.getenv('DATABASE_URL')
 
-DATABASE_URL = (
-    f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
-    if Postegres
-    else "sqlite:///ProdutosIG.db"
-)
-
+if not DATABASE_URL:
+    DATABASE_URL = "sqlite:///ProdutosIG.db"
 
 # Criação do engine e da sessão
 ENGINE = create_engine(DATABASE_URL)
