@@ -19,7 +19,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from tqdm import tqdm
 from urllib3.exceptions import ReadTimeoutError
 
-from database.db_operations import get_link_produto, images_id, salvar_dados
+from database.db_operations import get_count_products_without_images, get_link_produto, images_id, salvar_dados
+from scraper.utils.categories import get_categories
 
 
 @contextmanager
@@ -146,7 +147,7 @@ def process_page(driver, url, imagens, max_retries=5):
     try:
         for attempt in range(1, max_retries + 1):
             delay = calculate_delay(attempt)
-            logging.info(f"Tentativa {attempt } de carregar a página: {url}")
+            logging.info(f"Tentativa {attempt} de carregar a página: {url}")
             driver.set_page_load_timeout(300)
             driver.get(url)
 
@@ -196,7 +197,15 @@ def process_page(driver, url, imagens, max_retries=5):
     return False
 
 
-def get_images(urls):
+def get_images():
+    url_base = "https://www.irmaosgoncalves.com.br"
+    _, urls, _ = get_categories(url_base)
+    # se tiver mais de 5000 sem imagens baixar as imagens
+    logging.info(f"Produtos sem imagens: {get_count_products_without_images()}")
+    if get_count_products_without_images() > 5000:
+        return
+
+    logging.info("Pegando o link das imagens...")
     imagens = []
     inicio = time.time()
     with get_driver() as driver, tqdm(total=len(urls), desc="Progresso") as pbar:

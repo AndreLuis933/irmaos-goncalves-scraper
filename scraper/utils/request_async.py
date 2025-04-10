@@ -4,12 +4,8 @@ import random
 
 import aiohttp
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/91.0.4472.124 Safari/537.36"
-    ),
-}
+from scraper.config.requests import HEADERS
+
 max_concurrent_requests = 1500
 semaphore = asyncio.Semaphore(max_concurrent_requests)
 

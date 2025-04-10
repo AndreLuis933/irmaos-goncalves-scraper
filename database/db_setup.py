@@ -7,6 +7,7 @@ from sqlalchemy.sql import func
 
 load_dotenv()
 
+# definir se é para usar o postegres ou sqlite, se for usar o postegres presiza colocar um arquivo .env na raiz do projeto com os dados do banco de dados  # noqa: E501
 Postegres = True
 
 DATABASE_URL = (
@@ -30,7 +31,7 @@ class Produto(Base):
     categoria = Column(String(255), nullable=True)
     data_atualizacao = Column(
         Date,
-        default=func.current_date(),  # Usando func.current_date() do SQLAlchemy
+        default=func.current_date(),
         onupdate=func.current_date(),
         nullable=False,
     )

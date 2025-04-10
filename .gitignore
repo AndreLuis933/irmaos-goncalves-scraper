@@ -1,12 +1,13 @@
-resto/
 *.db
 seleniumpictures/
-atual.ipynb
-descriçao-projeto.txt
 __pycache__/
 .vscode
 .conda
-*ipynb
+
+# *ipynb
+analize_teste.ipynb
+teste.ipynb
+
 
 # Environments
 .env

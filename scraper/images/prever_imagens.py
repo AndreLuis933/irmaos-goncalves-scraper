@@ -6,14 +6,11 @@ from collections import Counter
 import aiohttp
 
 from database.db_operations import get_dataframe, salvar_dados
+from scraper.config.requests import HEADERS
 
 #modulo nao nessesario mais
 
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/"
-    "537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-}
 MODIFICADORES = ["_1", "_99_1", "_1_1", "_1_3", "_99_3"]
 EXTENSOES = [".jpg", ".png"]
 
