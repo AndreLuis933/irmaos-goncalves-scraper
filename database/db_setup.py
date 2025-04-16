@@ -1,23 +1,38 @@
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import Column, Date, Float, ForeignKey, Integer, LargeBinary, String, create_engine
+from sqlalchemy import (
+    Column,
+    Date,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    LargeBinary,
+    String,
+    UniqueConstraint,
+    create_engine,
+)
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from sqlalchemy.sql import func
 
 load_dotenv()
 
 # se for usar postgres: o DATABASE_URL tem que ser definido no .env
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     DATABASE_URL = "sqlite:///ProdutosIG.db"
+
 
 # Criação do engine e da sessão
 ENGINE = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=ENGINE)
 
+DATABASE_TYPE = ENGINE.dialect.name
+
 Base = declarative_base()
+
 
 class Produto(Base):
     __tablename__ = "produtos"
@@ -46,6 +61,11 @@ class HistoricoPreco(Base):
     )
     produto = relationship("Produto", back_populates="historico_precos")
 
+    __table_args__ = (
+        UniqueConstraint("produto_id", "data_atualizacao", name="uq_produto_data"),
+        Index("idx_historico_data", data_atualizacao),
+    )
+
 
 class Imagem(Base):
     __tablename__ = "imagens"
@@ -67,4 +87,3 @@ def init_db():
 
 if __name__ == "__main__":
     init_db()
-

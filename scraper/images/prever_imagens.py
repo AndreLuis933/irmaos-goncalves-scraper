@@ -5,7 +5,7 @@ from collections import Counter
 
 import aiohttp
 
-from database.db_operations import get_dataframe, salvar_dados
+from database.db_operations import get_dataframe, save_images
 from scraper.config.requests import HEADERS
 
 #modulo nao nessesario mais
@@ -75,11 +75,11 @@ async def testar_link(total_links, recovery_time=5, pacote_size=50):
                     print(status)
 
             if len(pacote) >= pacote_size:
-                salvar_dados(pacote, "imagens")
+                save_images(pacote)
                 pacote.clear()
 
         if pacote:
-            salvar_dados(pacote, "imagens")
+            save_images(pacote)
 
     tempo_gasto = time.time() - inicio
     print(f"Todas as requisições concluídas. Tempo total: {tempo_gasto:.2f} segundos")

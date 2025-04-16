@@ -3,7 +3,7 @@ import asyncio
 import aiohttp
 from tqdm import tqdm
 
-from database.db_operations import get_image_links, salvar_dados
+from database.db_operations import get_image_links, save_images
 from scraper.utils.request_async import fetch_async
 
 
@@ -18,4 +18,4 @@ async def baixar_imagem(linhas=20000):
             tasks = [fetch_async(session, url, pbar=pbar) for url in total_requests]
             results = await asyncio.gather(*tasks)
 
-    salvar_dados([(content, url) for url, content in results], "imagens")
+    save_images([(content, url) for url, content in results])

@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
 from selenium.webdriver.support.wait import WebDriverWait
 
-from database.db_operations import get_dataframe, salvar_dados
+from database.db_operations import get_dataframe, save_images
 
 
 @contextmanager
@@ -97,7 +97,7 @@ def extrair_link_restante(linhas):
         linha = linha.drop(columns=["link"])
         linha = linha.iloc[0]
         linha["produto_id"] = int(linha["produto_id"])
-        salvar_dados([tuple(linha)], "imagens")
+        save_images([tuple(linha)])
 
         time.sleep(2)
 

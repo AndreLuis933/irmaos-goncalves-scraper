@@ -19,7 +19,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from tqdm import tqdm
 from urllib3.exceptions import ReadTimeoutError
 
-from database.db_operations import get_count_products_without_images, get_link_produto, images_id, salvar_dados
+from database.db_operations import get_count_products_without_images, get_link_produto, images_id, save_images
 from scraper.utils.categories import get_categories
 
 
@@ -178,7 +178,7 @@ def process_page(driver, url, imagens, max_retries=5):
             processed = df2.apply(processar_e_salvar, axis=1, args=(imagens,))
 
             if processed.all():
-                logging.info(f"Processadas {len(imagens)} imagens válidas.")
+                # logging.info(f"Processadas {len(imagens)} imagens válidas.")
                 return True
 
             # se tiver no images
@@ -191,7 +191,7 @@ def process_page(driver, url, imagens, max_retries=5):
             time.sleep(delay)
 
     except (TimeoutException, StaleElementReferenceException, ReadTimeoutError) as e:
-        logging.exception(f"Erro ao processar a página: {e}")
+        logging.exception(f"Erro ao processar a página:")
 
     logging.error(f"Falha ao processar a página após {max_retries} tentativas.")
     return False
@@ -202,7 +202,7 @@ def get_images():
     _, urls, _ = get_categories(url_base)
     # se tiver mais de 5000 sem imagens baixar as imagens
     logging.info(f"Produtos sem imagens: {get_count_products_without_images()}")
-    if get_count_products_without_images() < 5000:
+    if get_count_products_without_images() < 2000:
         return
 
     logging.info("Pegando o link das imagens...")
@@ -211,7 +211,7 @@ def get_images():
     with get_driver() as driver, tqdm(total=len(urls), desc="Progresso") as pbar:
         for url in urls:
             if process_page(driver, url, imagens):
-                salvar_dados(imagens, "imagens")
+                save_images(imagens)
                 imagens.clear()
             else:
                 logging.warning(f"Pulando URL devido a falhas repetidas: {url}")

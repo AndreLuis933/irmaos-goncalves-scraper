@@ -10,13 +10,11 @@ from database.db_operations import (
     execute_today,
     get_null_product_category,
     price_change,
-    salvar_dados,
+    save_price,
+    save_product,
 )
 from scraper.utils.categories import get_categories
 from scraper.utils.request_async import fetch_async
-
-# Configuração do logging
-logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
 
 def carregar_cookies():
@@ -71,9 +69,10 @@ async def process_url(session, url, cookies, nome):
 async def baixar_site():
     # se ja execultou hoje, nao execultar novamente
     if execute_today():
-        print(execute_today().data_atualizacao)
-        return
-    inicio = time.time()
+        logging.info(f"Ja executou hoje dia: {execute_today().data_atualizacao}")
+        # return
+
+    inicio1 = time.time()
     cookies = carregar_cookies()
     url_base = "https://www.irmaosgoncalves.com.br"
     urls_folha, urls_raiz, nomes_arquivos = get_categories(url_base)
@@ -94,12 +93,18 @@ async def baixar_site():
     produtos_para_salvar = [produto for produtos, _ in resultados for produto in produtos]
     precos_para_salvar = [preco for _, precos in resultados for preco in precos]
 
-    salvar_dados(produtos_para_salvar, "produtos")
+    inicio = time.time()
+    save_product(produtos_para_salvar)
+    fim = time.time()
+    logging.info(f"Tempo de execução dos produtos: {fim - inicio:.2f} segundos.")
 
-    salvar_dados(precos_para_salvar, "historico_preco")
-
+    inicio = time.time()
+    save_price(precos_para_salvar)
     fim = time.time()
     logging.info(f"Tempo de execução dos preços: {fim - inicio:.2f} segundos.")
+
+    fim1 = time.time()
+    logging.info(f"Tempo de execução dos total: {fim1 - inicio1:.2f} segundos.")
 
     # ver quantos produtos mudaram de preço desde a primeira execução
     price_change()

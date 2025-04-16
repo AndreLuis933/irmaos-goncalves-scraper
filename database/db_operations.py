@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -10,6 +11,7 @@ def get_dataframe(query):
     """Retorna um DataFrame do Pandas com os resultados da consulta SQL."""
     return pd.read_sql_query(query, ENGINE)
 
+
 def get_image_links():
     with Session() as session:
         imagens = (
@@ -20,92 +22,152 @@ def get_image_links():
         )
         return [imagem.link_imagem for imagem in imagens]
 
-def produtos(dados, session):
-    objetos = []
-    for nome, link, categoria in dados:
-        produto = session.query(Produto).filter_by(link=link).first()
-        if produto:
-            produto.nome = nome
-            produto.link = link
-            produto.categoria = categoria if categoria else produto.categoria
-        else:
-            produto = Produto(nome=nome, link=link, categoria=categoria)
-            objetos.append(produto)
 
-    return objetos
+def save_price(dados):
+    try:
+        with Session() as session:
+            hoje = datetime.now(timezone.utc).date()
+
+            # Extrair links e criar mapeamento produtos
+            links = [link for link, _ in dados]
+            link_to_id = {
+                p.link: p.id for p in session.query(Produto.id, Produto.link).filter(Produto.link.in_(links)).all()
+            }
+
+            # Preparar dados para inserção
+            valores_para_inserir = [
+                {"produto_id": link_to_id.get(link), "preco": preco, "data_atualizacao": hoje}
+                for link, preco in dados
+                if link_to_id.get(link)
+            ]
+
+            if not valores_para_inserir:
+                logging.info("Nenhum produto válido para inserir.")
+                return
+
+            # Detectar o dialeto do banco de dados
+            dialect = session.bind.dialect.name
+
+            if dialect == "postgresql":
+                # Versão PostgreSQL com on_conflict_do_nothing
+                from sqlalchemy.dialects.postgresql import insert
+
+                stmt = insert(HistoricoPreco).values(valores_para_inserir)
+                stmt = stmt.on_conflict_do_nothing(index_elements=["produto_id", "data_atualizacao"])
+                result = session.execute(stmt)
+                session.commit()
+                logging.info(f"{result.rowcount} registros de preços salvos com sucesso.")
+            else:
+                # Versão para SQLite (e outros bancos) usando insert or ignore
+                # SQLite requer inserções individuais com OR IGNORE
+                table = HistoricoPreco.__table__
+                for valor in valores_para_inserir:
+                    stmt = table.insert().prefix_with("OR IGNORE").values(valor)
+                    session.execute(stmt)
+
+                session.commit()
+
+    except Exception as e:
+        session.rollback()
+        logging.info(f"Erro ao salvar registros de preços: {e}")
 
 
-def historico_preco(dados, session):
-    objetos = []
-    for link, preco in dados:
-        produto = session.query(Produto).filter_by(link=link).first()
+def save_product(dados):
+    try:
+        with Session() as session:
+            # Obter todos os produtos em uma consulta (com índices adequados, essa operação é rápida)
+            produtos_atuais = {p.link: p for p in session.query(Produto).all()}
 
-        hoje = datetime.now(timezone.utc).date()
-        registro_existente = (
-            session.query(HistoricoPreco).filter_by(produto_id=produto.id, data_atualizacao=hoje).first()
-        )
+            # Mapear os produtos recebidos para facilitar comparação
+            links_recebidos = {link for _, link, _ in dados}
 
-        if not registro_existente:
-            objetos.append(HistoricoPreco(produto_id=produto.id, preco=preco, data_atualizacao=hoje))
+            # Identificar produtos para inserir, atualizar e remover (opcional)
+            links_para_inserir = links_recebidos - produtos_atuais.keys()
+            links_para_atualizar = links_recebidos.intersection(produtos_atuais.keys())
 
-    return objetos
+            # Preparar operações em lote
+            produtos_para_inserir = []
+
+            # Processar atualizações e inserções
+            for nome, link, categoria in dados:
+                if link in links_para_inserir:
+                    produtos_para_inserir.append(Produto(nome=nome, link=link, categoria=categoria))
+                elif link in links_para_atualizar:
+                    produto = produtos_atuais[link]
+                    if produto.nome != nome or (categoria and produto.categoria != categoria):
+                        produto.nome = nome
+                        if categoria:
+                            produto.categoria = categoria
+
+            if produtos_para_inserir:
+                session.bulk_save_objects(produtos_para_inserir)
+
+            session.commit()
+
+            logging.info(f"{len(links_recebidos)} produtos atualizados ou inseridos com sucesso.")
+
+    except Exception as e:
+        session.rollback()
+        logging.info(f"Erro ao processar produtos: {e}")
 
 
-def imagens(dados, session):
+def save_images(dados):
     """Processa dados de imagens, atualizando ou criando registros no banco de dados.
 
     Parâmetros:
-    - dados (list of tuple): Lista de tuplas com (link, conteudo), onde `conteudo` pode ser bytes para atualizar imagens
-    existentes ou int para criar novas com `produto_id`.
-    - session (Session): Sessão de banco de dados SQLAlchemy para operações de consulta e atualização.
-
-    Retorna:
-    - list: Lista de novos objetos `Imagem` para persistência.
+    - dados (list of tuple): Lista de tuplas com (conteudo, link), onde todos os elementos
+      são do mesmo tipo: ou bytes para atualizar imagens existentes ou int para criar novas com `produto_id`.
     """
-    objetos = []
-    for conteudo, link in dados:
-        if isinstance(conteudo, bytes):
-            imagem = session.query(Imagem).filter_by(link_imagem=link).first()
-            imagem.conteudo = conteudo
-        elif isinstance(conteudo, int):
-            objetos.append(Imagem(produto_id=conteudo, link_imagem=link))
-    return objetos
-
-
-def salvar_dados(dados, tipo):
-    """Salva dados em massa no banco de dados.
-
-    Parâmetros:
-    - dados (list): Lista de dados a serem salvos.
-    - tipo (str): Tipo de dados a serem processados ('produtos', 'historico_preco', 'imagens').
-
-    Retorna:
-    - None
-    """
-    processadores = {
-        "produtos": produtos,
-        "historico_preco": historico_preco,
-        "imagens": imagens,
-    }
-
-    # Obtenha a função de processamento correta
-    funcao_processamento = processadores.get(tipo)
-
-    if not funcao_processamento:
-        print(f"Tipo de processamento '{tipo}' não é válido.")
+    if not dados:
         return
 
-    session = Session()
+    # Verificar se é operação de atualização ou inserção
+    primeiro_elemento = dados[0][0]
+    operacao_atualizacao = isinstance(primeiro_elemento, bytes)
+
     try:
-        objetos = funcao_processamento(dados, session)
-        session.bulk_save_objects(objetos)
-        session.commit()
-        print(f"{len(objetos)} registros de {tipo} salvos ou atualizados com sucesso.")
+        with Session() as session:
+            contador = 0
+
+            if operacao_atualizacao:
+                links = [link for _, link in dados]
+                imagens = session.query(Imagem).filter(Imagem.link_imagem.in_(links)).all()
+
+                # Criar mapeamento de link para imagem
+                imagens_por_link = {img.link_imagem: img for img in imagens}
+
+                # Atualizar conteúdo em lote
+                for conteudo, link in dados:
+                    if link in imagens_por_link:
+                        imagens_por_link[link].conteudo = conteudo
+                        contador += 1
+            else:
+                produto_ids = [produto_id for produto_id, _ in dados]
+
+                # Verificar quais produtos já têm imagens
+                produtos_com_imagem = {
+                    img.produto_id
+                    for img in session.query(Imagem.produto_id).filter(Imagem.produto_id.in_(produto_ids)).all()
+                }
+
+                # Filtrar apenas produtos sem imagem
+                objetos = [
+                    Imagem(produto_id=produto_id, link_imagem=link)
+                    for produto_id, link in dados
+                    if produto_id not in produtos_com_imagem
+                ]
+
+                if objetos:
+                    session.bulk_save_objects(objetos)
+                    contador = len(objetos)
+
+            session.commit()
+            logging.info(f"{contador} registros de imagens salvos ou atualizados com sucesso.")
+
     except Exception as e:
-        session.rollback()
-        print(f"Erro ao salvar registros de {tipo} exexeçao {e}")
-    finally:
-        session.close()
+        if "session" in locals() and session.is_active:
+            session.rollback()
+        logging.info(f"Erro ao salvar registros de imagens: {e}")
 
 
 def execute_today():
@@ -126,7 +188,7 @@ def images_id():
 
 def get_null_product_category():
     with Session() as session:
-        return len(session.query(Produto).filter_by(categoria=None).all())
+        return session.query(Produto).filter(Produto.categoria.is_(None)).count()
 
 
 def get_count_products_without_images():
@@ -180,4 +242,71 @@ def price_change():
     #     print(f"  De R$ {m.preco_inicial:.2f} em {m.primeira_data.strftime('%d/%m/%Y')}")
     #     print(f"  Para R$ {m.preco_final:.2f} em {m.ultima_data.strftime('%d/%m/%Y')}")
     #     print("--------------------")
-    print(f"Total de produtos com mudança de preço: {len(mudancas)}")
+    logging.info(f"Total de produtos com mudança de preço: {len(mudancas)}")
+
+
+def save_images1(dados):
+    """Processa dados de imagens, atualizando ou criando registros no banco de dados.
+
+    Parâmetros:
+    - dados (list of tuple): Lista de tuplas com (link, conteudo), onde `conteudo` pode ser bytes para atualizar imagens
+    existentes ou int para criar novas com `produto_id`.
+
+    """
+    try:
+        with Session() as session:
+            objetos = []
+            for conteudo, link in dados:
+                if isinstance(conteudo, bytes):
+                    imagem = session.query(Imagem).filter_by(link_imagem=link).first()
+                    imagem.conteudo = conteudo
+                elif isinstance(conteudo, int):
+                    objetos.append(Imagem(produto_id=conteudo, link_imagem=link))
+
+            session.bulk_save_objects(objetos)
+            session.commit()
+            logging.info(f"{len(objetos)} registros de imagens salvos ou atualizados com sucesso.")
+    except Exception as e:
+        session.rollback()
+        logging.info(f"Erro ao salvar registros de imagens exexeçao {e}")
+
+
+def save_price1(dados):
+    try:
+        with Session() as session:
+            hoje = datetime.now(timezone.utc).date()
+
+            # Extrair links e criar mapeamento produtos
+            links = [link for link, _ in dados]
+            link_to_id = {
+                p.link: p.id for p in session.query(Produto.id, Produto.link).filter(Produto.link.in_(links)).all()
+            }
+
+            # Obter IDs de produtos que já têm registros hoje
+            produtos_com_registro = {
+                r.produto_id
+                for r in session.query(HistoricoPreco.produto_id)
+                .filter(
+                    HistoricoPreco.produto_id.in_(list(link_to_id.values())),
+                    HistoricoPreco.data_atualizacao == hoje,
+                )
+                .all()
+            }
+
+            # Criar objetos para inserção, filtrando produtos não encontrados e já registrados
+            objetos = [
+                HistoricoPreco(produto_id=link_to_id.get(link), preco=preco, data_atualizacao=hoje)
+                for link, preco in dados
+                if link_to_id.get(link) and link_to_id.get(link) not in produtos_com_registro
+            ]
+
+            if objetos:
+                session.bulk_save_objects(objetos)
+                session.commit()
+                logging.info(f"{len(objetos)} registros de preços salvos com sucesso.")
+            else:
+                logging.info("Nenhum novo registro de preço para salvar hoje.")
+
+    except Exception as e:
+        session.rollback()
+        logging.info(f"Erro ao salvar registros de preços: {e}")
