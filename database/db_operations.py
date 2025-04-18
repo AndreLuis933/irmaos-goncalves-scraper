@@ -4,7 +4,28 @@ from datetime import datetime, timezone
 import pandas as pd
 from sqlalchemy import and_, func, not_
 
-from .db_setup import ENGINE, HistoricoPreco, Imagem, Produto, Session
+from .db_setup import ENGINE, Cidade, DisponibilidadeCidade, HistoricoPreco, Imagem, Produto, Session
+
+
+def set_cidades(cidades):
+    """Atualiza a tabela de cidades com a lista fornecida.
+
+    Args:
+        cidades (list): Lista de strings com nomes de cidades
+
+    """
+    with Session() as session:
+        # Busca as cidades existentes
+        cidades_existentes = {cidade.nome for cidade in session.query(Cidade).all()}
+
+        # Adiciona apenas cidades que não existem
+        cidades_para_adicionar = [
+            Cidade(nome=nome_cidade) for nome_cidade in cidades if nome_cidade not in cidades_existentes
+        ]
+
+        if cidades_para_adicionar:
+            session.add_all(cidades_para_adicionar)
+            session.commit()
 
 
 def get_dataframe(query):
@@ -22,8 +43,15 @@ def get_image_links():
         )
         return [imagem.link_imagem for imagem in imagens]
 
+def save_disponibilidade(dados):
+    with Session() as session:
+        session.add_all(dados)
+        session.commit()
+
 
 def save_price(dados):
+    if not dados:
+        return
     try:
         with Session() as session:
             hoje = datetime.now(timezone.utc).date()
@@ -45,11 +73,9 @@ def save_price(dados):
                 logging.info("Nenhum produto válido para inserir.")
                 return
 
-            # Detectar o dialeto do banco de dados
             dialect = session.bind.dialect.name
 
             if dialect == "postgresql":
-                # Versão PostgreSQL com on_conflict_do_nothing
                 from sqlalchemy.dialects.postgresql import insert
 
                 stmt = insert(HistoricoPreco).values(valores_para_inserir)
@@ -58,8 +84,7 @@ def save_price(dados):
                 session.commit()
                 logging.info(f"{result.rowcount} registros de preços salvos com sucesso.")
             else:
-                # Versão para SQLite (e outros bancos) usando insert or ignore
-                # SQLite requer inserções individuais com OR IGNORE
+                # Versão para outros bancos
                 table = HistoricoPreco.__table__
                 for valor in valores_para_inserir:
                     stmt = table.insert().prefix_with("OR IGNORE").values(valor)
@@ -73,19 +98,17 @@ def save_price(dados):
 
 
 def save_product(dados):
+    if not dados:
+        return
+
     try:
         with Session() as session:
-            # Obter todos os produtos em uma consulta (com índices adequados, essa operação é rápida)
             produtos_atuais = {p.link: p for p in session.query(Produto).all()}
-
-            # Mapear os produtos recebidos para facilitar comparação
             links_recebidos = {link for _, link, _ in dados}
 
-            # Identificar produtos para inserir, atualizar e remover (opcional)
+            # Identificar produtos para inserir e atualizar
             links_para_inserir = links_recebidos - produtos_atuais.keys()
             links_para_atualizar = links_recebidos.intersection(produtos_atuais.keys())
-
-            # Preparar operações em lote
             produtos_para_inserir = []
 
             # Processar atualizações e inserções
@@ -103,7 +126,6 @@ def save_product(dados):
                 session.bulk_save_objects(produtos_para_inserir)
 
             session.commit()
-
             logging.info(f"{len(links_recebidos)} produtos atualizados ou inseridos com sucesso.")
 
     except Exception as e:
@@ -112,12 +134,6 @@ def save_product(dados):
 
 
 def save_images(dados):
-    """Processa dados de imagens, atualizando ou criando registros no banco de dados.
-
-    Parâmetros:
-    - dados (list of tuple): Lista de tuplas com (conteudo, link), onde todos os elementos
-      são do mesmo tipo: ou bytes para atualizar imagens existentes ou int para criar novas com `produto_id`.
-    """
     if not dados:
         return
 

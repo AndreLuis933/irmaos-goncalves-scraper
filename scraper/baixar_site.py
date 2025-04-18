@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 import time
 
@@ -12,20 +11,11 @@ from database.db_operations import (
     price_change,
     save_price,
     save_product,
+    set_cidades,
 )
 from scraper.utils.categories import get_categories
+from scraper.utils.load_cookies import load_cookie
 from scraper.utils.request_async import fetch_async
-
-
-def carregar_cookies():
-    try:
-        with open("cookies.json") as file:
-            cookies = json.load(file)
-            cookies["app"] = cookies["app"]["value"]
-            return cookies
-    except Exception:
-        logging.exception("Erro ao carregar cookies: ")
-        raise
 
 
 def extrair_dados(soup):
@@ -49,21 +39,21 @@ def verificar_tamanhos(nome, preco, link):
         raise ValueError(msg)
 
 
-async def process_url(session, url, cookies, nome):
+async def process_url(session, url, cookies, categoria, cidade):
     content = await fetch_async(session, url, cookies)
     if not content:
         return [], []
 
-    logging.info(url.split("?")[0].split("/")[-1])
+    logging.info("%s - %s", cidade, url.split("?")[0].split("/")[-1])
     soup = BeautifulSoup(content, "html.parser")
     nome_prod, preco, link = extrair_dados(soup)
 
     verificar_tamanhos(nome_prod, preco, link)
 
-    produtos = [(n, l, nome) for n, l in zip(nome_prod, link)]
+    produtos = [(n, l, categoria) for n, l in zip(nome_prod, link)]
     precos = [(l, float(p.replace("R$", "").replace(".", "").replace(",", ".").strip())) for p, l in zip(preco, link)]
 
-    return produtos, precos
+    return produtos, precos, cidade
 
 
 async def baixar_site():
@@ -73,23 +63,35 @@ async def baixar_site():
         # return
 
     inicio1 = time.time()
-    cookies = carregar_cookies()
+    cookies = load_cookie("requests")
+    set_cidades([cidade for cidade, _ in cookies])
+    return
+
     url_base = "https://www.irmaosgoncalves.com.br"
-    urls_folha, urls_raiz, nomes_arquivos = get_categories(url_base)
+    urls_folha, urls_raiz, categorias = get_categories(url_base)
     urls = urls_folha
 
     # se tiver menos de 100 produtos sem categoria baixar os produtos sem a categoria para ir mais rapido
     logging.info(f"Produtos sem categoria: {get_null_product_category()}")
-    if get_null_product_category() < 100:
+    if get_null_product_category() < 10000000:
         urls = urls_raiz
-        nomes_arquivos = len(urls) * [None]
+        categorias = len(urls) * [None]
 
     # fazer as requests de forma assíncrona
     async with aiohttp.ClientSession() as session:
-        tasks = [process_url(session, url, cookies, nome) for url, nome in zip(urls, nomes_arquivos)]
+        tasks = [
+            process_url(session, url, cookie, categoria, cidade)
+            for url, categoria in zip(urls, categorias)
+            for cidade, cookie in cookies
+        ]
         resultados = await asyncio.gather(*tasks)
 
-    # separa as listas que estavam assim [(produtos, precos), (produtos, precos)] para uma com todos os produtos e outra com todos os preços  # noqa: E501
+    import pickle
+
+    with open("dados_produtos.pickle", "wb") as arquivo:
+        pickle.dump(resultados, arquivo)
+    # [([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade), ([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade)]
+    # separa as listas que estavam assim [(produtos, precos,cidade), (produtos, precos,cidade)] para uma com todos os produtos e outra com todos os preços  # noqa: E501
     produtos_para_salvar = [produto for produtos, _ in resultados for produto in produtos]
     precos_para_salvar = [preco for _, precos in resultados for preco in precos]
 
@@ -105,6 +107,7 @@ async def baixar_site():
 
     fim1 = time.time()
     logging.info(f"Tempo de execução dos total: {fim1 - inicio1:.2f} segundos.")
+    print(len(produtos_para_salvar))
 
     # ver quantos produtos mudaram de preço desde a primeira execução
     price_change()

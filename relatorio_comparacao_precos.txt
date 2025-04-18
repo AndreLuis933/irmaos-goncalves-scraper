@@ -1,0 +1,900 @@
+RELATÓRIO DE COMPARAÇÃO DE PREÇOS ENTRE CIDADES
+==================================================
+
+Total de produtos analisados: 20408
+Total de cidades comparadas: 8
+
+Cidades analisadas:
+- Ariquemes
+- Cacoal
+- Jaru
+- Ji-ParanÃ¡
+- Ouro Preto do Oeste
+- Porto Velho
+- Rolim de Moura
+- Vilhena
+
+PRODUTOS COM MAIOR VARIAÇÃO DE PREÇO:
+--------------------------------------------------
+Produto: Banana Prata Aprox.1,3kg
+Variação percentual: 198.41%
+Preço mínimo: R$ 5.66
+Preço máximo: R$ 16.89
+Diferença absoluta: R$ 11.23
+Número de cidades: 6
+Preços por cidade:
+  - Ariquemes: R$ 15.08
+  - Cacoal: R$ 11.31
+  - Ji-ParanÃ¡: R$ 9.43
+  - Ouro Preto do Oeste: R$ 12.97
+  - Porto Velho: R$ 16.89
+  - Rolim de Moura: R$ 5.66
+--------------------------------------------------
+Produto: Banana Maçã Aprox.1kg
+Variação percentual: 126.44%
+Preço mínimo: R$ 4.35
+Preço máximo: R$ 9.85
+Diferença absoluta: R$ 5.50
+Número de cidades: 6
+Preços por cidade:
+  - Ariquemes: R$ 7.85
+  - Cacoal: R$ 7.80
+  - Ji-ParanÃ¡: R$ 6.55
+  - Ouro Preto do Oeste: R$ 9.85
+  - Porto Velho: R$ 7.98
+  - Rolim de Moura: R$ 4.35
+--------------------------------------------------
+Produto: Chocolate KitKat White 41,5g
+Variação percentual: 113.71%
+Preço mínimo: R$ 2.99
+Preço máximo: R$ 6.39
+Diferença absoluta: R$ 3.40
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 2.99
+  - Cacoal: R$ 2.99
+  - Jaru: R$ 2.99
+  - Ji-ParanÃ¡: R$ 2.99
+  - Ouro Preto do Oeste: R$ 2.99
+  - Porto Velho: R$ 2.99
+  - Rolim de Moura: R$ 6.39
+  - Vilhena: R$ 2.99
+--------------------------------------------------
+Produto: Biscoito Recheado Oreo Milkshake de Morango 144g
+Variação percentual: 68.34%
+Preço mínimo: R$ 4.99
+Preço máximo: R$ 8.40
+Diferença absoluta: R$ 3.41
+Número de cidades: 7
+Preços por cidade:
+  - Ariquemes: R$ 8.40
+  - Cacoal: R$ 8.40
+  - Jaru: R$ 8.40
+  - Ji-ParanÃ¡: R$ 8.40
+  - Ouro Preto do Oeste: R$ 8.40
+  - Porto Velho: R$ 4.99
+  - Rolim de Moura: R$ 8.40
+--------------------------------------------------
+Produto: Maracujá Aprox.500g
+Variação percentual: 65.41%
+Preço mínimo: R$ 3.99
+Preço máximo: R$ 6.60
+Diferença absoluta: R$ 2.61
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 6.60
+  - Cacoal: R$ 4.73
+  - Jaru: R$ 6.60
+  - Ji-ParanÃ¡: R$ 6.60
+  - Ouro Preto do Oeste: R$ 6.60
+  - Porto Velho: R$ 4.24
+  - Rolim de Moura: R$ 4.99
+  - Vilhena: R$ 3.99
+--------------------------------------------------
+Produto: Mamão Formosa Aprox.1,6kg
+Variação percentual: 62.79%
+Preço mínimo: R$ 10.32
+Preço máximo: R$ 16.80
+Diferença absoluta: R$ 6.48
+Número de cidades: 7
+Preços por cidade:
+  - Ariquemes: R$ 12.78
+  - Cacoal: R$ 10.32
+  - Jaru: R$ 15.76
+  - Ji-ParanÃ¡: R$ 16.80
+  - Ouro Preto do Oeste: R$ 15.76
+  - Rolim de Moura: R$ 13.68
+  - Vilhena: R$ 12.78
+--------------------------------------------------
+Produto: Maionese Hellmann's Tradicional 400g
+Variação percentual: 58.46%
+Preço mínimo: R$ 8.69
+Preço máximo: R$ 13.77
+Diferença absoluta: R$ 5.08
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 13.77
+  - Cacoal: R$ 13.77
+  - Jaru: R$ 13.77
+  - Ji-ParanÃ¡: R$ 13.77
+  - Ouro Preto do Oeste: R$ 13.77
+  - Porto Velho: R$ 8.69
+  - Rolim de Moura: R$ 13.77
+  - Vilhena: R$ 13.77
+--------------------------------------------------
+Produto: Salsa Califórina Unidade
+Variação percentual: 51.72%
+Preço mínimo: R$ 2.90
+Preço máximo: R$ 4.40
+Diferença absoluta: R$ 1.50
+Número de cidades: 3
+Preços por cidade:
+  - Jaru: R$ 3.75
+  - Porto Velho: R$ 2.90
+  - Rolim de Moura: R$ 4.40
+--------------------------------------------------
+Produto: Cheiro Verde Califórnia Unidade
+Variação percentual: 51.72%
+Preço mínimo: R$ 2.90
+Preço máximo: R$ 4.40
+Diferença absoluta: R$ 1.50
+Número de cidades: 6
+Preços por cidade:
+  - Ariquemes: R$ 3.35
+  - Jaru: R$ 3.75
+  - Ji-ParanÃ¡: R$ 3.95
+  - Ouro Preto do Oeste: R$ 3.95
+  - Porto Velho: R$ 2.90
+  - Rolim de Moura: R$ 4.40
+--------------------------------------------------
+Produto: Coentro Califórnia Unidade
+Variação percentual: 51.72%
+Preço mínimo: R$ 2.90
+Preço máximo: R$ 4.40
+Diferença absoluta: R$ 1.50
+Número de cidades: 6
+Preços por cidade:
+  - Cacoal: R$ 3.95
+  - Jaru: R$ 3.75
+  - Ji-ParanÃ¡: R$ 3.95
+  - Ouro Preto do Oeste: R$ 3.80
+  - Porto Velho: R$ 2.90
+  - Rolim de Moura: R$ 4.40
+--------------------------------------------------
+Produto: Banana de Fritar Aprox.600g
+Variação percentual: 50.00%
+Preço mínimo: R$ 3.48
+Preço máximo: R$ 5.22
+Diferença absoluta: R$ 1.74
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 5.22
+  - Cacoal: R$ 4.68
+  - Jaru: R$ 4.19
+  - Ji-ParanÃ¡: R$ 3.93
+  - Ouro Preto do Oeste: R$ 4.35
+  - Porto Velho: R$ 4.79
+  - Rolim de Moura: R$ 3.48
+  - Vilhena: R$ 4.11
+--------------------------------------------------
+Produto: Limão Aprox.400g
+Variação percentual: 48.10%
+Preço mínimo: R$ 1.58
+Preço máximo: R$ 2.34
+Diferença absoluta: R$ 0.76
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 2.34
+  - Cacoal: R$ 1.60
+  - Jaru: R$ 1.58
+  - Ji-ParanÃ¡: R$ 1.59
+  - Ouro Preto do Oeste: R$ 1.60
+  - Porto Velho: R$ 1.59
+  - Rolim de Moura: R$ 1.60
+  - Vilhena: R$ 2.34
+--------------------------------------------------
+Produto: Creme Dental Colgate Menta Refrescante Máxima Proteção Anticáries 120g Promocional
+Variação percentual: 47.47%
+Preço mínimo: R$ 4.95
+Preço máximo: R$ 7.30
+Diferença absoluta: R$ 2.35
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 7.30
+  - Cacoal: R$ 4.95
+  - Jaru: R$ 7.30
+  - Ji-ParanÃ¡: R$ 7.30
+  - Ouro Preto do Oeste: R$ 7.30
+  - Porto Velho: R$ 7.30
+  - Rolim de Moura: R$ 7.30
+  - Vilhena: R$ 7.30
+--------------------------------------------------
+Produto: Condicionador Seda Liso Perfeito 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 6
+Preços por cidade:
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda By Nina Secrets Colágeno + Vitamina C 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Prebióticos + Biotina Frasco 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 5
+Preços por cidade:
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Pretos Luminosos 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 6
+Preços por cidade:
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda By Rayza Babosa e Óleos 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 7
+Preços por cidade:
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Óleo Hidratação 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Frutas Vermelha e Gengibre 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Mel e Aveia 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 4
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Ji-ParanÃ¡: R$ 10.89
+  - Porto Velho: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Crespo Force by Gabi Oliveira 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Óleo de Argan 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 6
+Preços por cidade:
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Cachos Definidos 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda By Niina Secrets Água Micelar + Hialurônico 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 3
+Preços por cidade:
+  - Ji-ParanÃ¡: R$ 10.89
+  - Porto Velho: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Recarga Natural Bomba Coco 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 3
+Preços por cidade:
+  - Ji-ParanÃ¡: R$ 10.89
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda  Liso Extremo 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 5
+Preços por cidade:
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda  Restauração Instantânea 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 7
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Bambu e Biotina 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Condicionador Seda Ceramidas 325ml
+Variação percentual: 47.11%
+Preço mínimo: R$ 10.89
+Preço máximo: R$ 16.02
+Diferença absoluta: R$ 5.13
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 16.02
+  - Cacoal: R$ 16.02
+  - Jaru: R$ 11.89
+  - Ji-ParanÃ¡: R$ 10.89
+  - Ouro Preto do Oeste: R$ 16.02
+  - Porto Velho: R$ 16.02
+  - Rolim de Moura: R$ 16.02
+  - Vilhena: R$ 16.02
+--------------------------------------------------
+Produto: Couve Verão Unidade
+Variação percentual: 46.55%
+Preço mínimo: R$ 2.90
+Preço máximo: R$ 4.25
+Diferença absoluta: R$ 1.35
+Número de cidades: 3
+Preços por cidade:
+  - Ouro Preto do Oeste: R$ 3.95
+  - Porto Velho: R$ 2.90
+  - Rolim de Moura: R$ 4.25
+--------------------------------------------------
+Produto: Queijo Real Minas Frescal Light 1 Unid. Aprox.400g
+Variação percentual: 43.95%
+Preço mínimo: R$ 11.99
+Preço máximo: R$ 17.26
+Diferença absoluta: R$ 5.27
+Número de cidades: 7
+Preços por cidade:
+  - Cacoal: R$ 17.26
+  - Jaru: R$ 17.26
+  - Ji-ParanÃ¡: R$ 17.26
+  - Ouro Preto do Oeste: R$ 17.26
+  - Porto Velho: R$ 17.26
+  - Rolim de Moura: R$ 11.99
+  - Vilhena: R$ 17.26
+--------------------------------------------------
+Produto: Shampoo Seda Bambu e Biotina 325ml
+Variação percentual: 43.27%
+Preço mínimo: R$ 9.80
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.24
+Número de cidades: 6
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Cacoal: R$ 9.80
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda  Óleo Hidratação 325ml
+Variação percentual: 43.27%
+Preço mínimo: R$ 9.80
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.24
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Cacoal: R$ 9.80
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Ouro Preto do Oeste: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Rolim de Moura: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Prebióticos + Biotina Frasco 325ml
+Variação percentual: 43.27%
+Preço mínimo: R$ 9.80
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.24
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Cacoal: R$ 9.80
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Ouro Preto do Oeste: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Rolim de Moura: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Anticaspa 325ml
+Variação percentual: 43.27%
+Preço mínimo: R$ 9.80
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.24
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Cacoal: R$ 9.80
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Ouro Preto do Oeste: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Rolim de Moura: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Chá Verde e Cítricos 325ml
+Variação percentual: 43.27%
+Preço mínimo: R$ 9.80
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.24
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Cacoal: R$ 9.80
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Ouro Preto do Oeste: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Rolim de Moura: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Ceramidas 325ml
+Variação percentual: 43.27%
+Preço mínimo: R$ 9.80
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.24
+Número de cidades: 5
+Preços por cidade:
+  - Cacoal: R$ 9.80
+  - Jaru: R$ 9.98
+  - Porto Velho: R$ 14.04
+  - Rolim de Moura: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Hidratação Frutas Vermelhas e Gengibre 325ml
+Variação percentual: 43.27%
+Preço mínimo: R$ 9.80
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.24
+Número de cidades: 6
+Preços por cidade:
+  - Cacoal: R$ 9.80
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Ouro Preto do Oeste: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Milho Verde Pacote Aprox.1,3kg
+Variação percentual: 42.27%
+Preço mínimo: R$ 12.61
+Preço máximo: R$ 17.94
+Diferença absoluta: R$ 5.33
+Número de cidades: 2
+Preços por cidade:
+  - Ji-ParanÃ¡: R$ 12.61
+  - Porto Velho: R$ 17.94
+--------------------------------------------------
+Produto: Toalha de Rosto Karsten Meg Marinho 48x65 cm
+Variação percentual: 40.76%
+Preço mínimo: R$ 9.69
+Preço máximo: R$ 13.64
+Diferença absoluta: R$ 3.95
+Número de cidades: 8
+Preços por cidade:
+  - Ariquemes: R$ 13.64
+  - Cacoal: R$ 13.64
+  - Jaru: R$ 13.64
+  - Ji-ParanÃ¡: R$ 13.64
+  - Ouro Preto do Oeste: R$ 13.64
+  - Porto Velho: R$ 9.69
+  - Rolim de Moura: R$ 13.64
+  - Vilhena: R$ 13.64
+--------------------------------------------------
+Produto: Toalha de Rosto Karsten Morelo Allure 40x65 cm
+Variação percentual: 40.76%
+Preço mínimo: R$ 9.69
+Preço máximo: R$ 13.64
+Diferença absoluta: R$ 3.95
+Número de cidades: 6
+Preços por cidade:
+  - Ariquemes: R$ 13.64
+  - Cacoal: R$ 13.64
+  - Jaru: R$ 13.64
+  - Ji-ParanÃ¡: R$ 13.64
+  - Ouro Preto do Oeste: R$ 13.64
+  - Porto Velho: R$ 9.69
+--------------------------------------------------
+Produto: Toalha de Rosto Karsten Morelo 48x65 cm
+Variação percentual: 40.76%
+Preço mínimo: R$ 9.69
+Preço máximo: R$ 13.64
+Diferença absoluta: R$ 3.95
+Número de cidades: 6
+Preços por cidade:
+  - Ariquemes: R$ 13.64
+  - Cacoal: R$ 13.64
+  - Jaru: R$ 13.64
+  - Ji-ParanÃ¡: R$ 13.64
+  - Ouro Preto do Oeste: R$ 13.64
+  - Porto Velho: R$ 9.69
+--------------------------------------------------
+Produto: Shampoo Seda Óleo de Coco Frasco 325ml
+Variação percentual: 40.68%
+Preço mínimo: R$ 9.98
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.06
+Número de cidades: 2
+Preços por cidade:
+  - Jaru: R$ 9.98
+  - Porto Velho: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda  Pretos Luminosos 325ml
+Variação percentual: 40.68%
+Preço mínimo: R$ 9.98
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.06
+Número de cidades: 3
+Preços por cidade:
+  - Jaru: R$ 9.98
+  - Porto Velho: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Liso Perfeito 325ml
+Variação percentual: 40.68%
+Preço mínimo: R$ 9.98
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.06
+Número de cidades: 7
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Ouro Preto do Oeste: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Rolim de Moura: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Colágeno e Vitamina C 325ml
+Variação percentual: 40.68%
+Preço mínimo: R$ 9.98
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.06
+Número de cidades: 6
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Jaru: R$ 9.98
+  - Ji-ParanÃ¡: R$ 14.04
+  - Ouro Preto do Oeste: R$ 14.04
+  - Porto Velho: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda  Restauração Instantânea 325ml
+Variação percentual: 40.68%
+Preço mínimo: R$ 9.98
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.06
+Número de cidades: 3
+Preços por cidade:
+  - Ariquemes: R$ 14.04
+  - Jaru: R$ 9.98
+  - Porto Velho: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Óleo de Argan Frasco 325ml
+Variação percentual: 40.68%
+Preço mínimo: R$ 9.98
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.06
+Número de cidades: 4
+Preços por cidade:
+  - Jaru: R$ 9.98
+  - Porto Velho: R$ 14.04
+  - Rolim de Moura: R$ 14.04
+  - Vilhena: R$ 14.04
+--------------------------------------------------
+Produto: Shampoo Seda Crespo Force  325ml
+Variação percentual: 40.68%
+Preço mínimo: R$ 9.98
+Preço máximo: R$ 14.04
+Diferença absoluta: R$ 4.06
+Número de cidades: 2
+Preços por cidade:
+  - Jaru: R$ 9.98
+  - Porto Velho: R$ 14.04
+--------------------------------------------------
+
+ANÁLISE POR CIDADE:
+--------------------------------------------------
+Cidade: Ariquemes
+Preço médio: R$ 27.84
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 5188.30
+Número de produtos: 15727
+------------------------------
+Cidade: Cacoal
+Preço médio: R$ 25.70
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 5188.30
+Número de produtos: 15393
+------------------------------
+Cidade: Jaru
+Preço médio: R$ 24.80
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 5188.30
+Número de produtos: 15433
+------------------------------
+Cidade: Ji-ParanÃ¡
+Preço médio: R$ 26.93
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 5188.30
+Número de produtos: 17702
+------------------------------
+Cidade: Ouro Preto do Oeste
+Preço médio: R$ 23.72
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 3798.80
+Número de produtos: 14713
+------------------------------
+Cidade: Porto Velho
+Preço médio: R$ 27.92
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 5188.30
+Número de produtos: 19223
+------------------------------
+Cidade: Rolim de Moura
+Preço médio: R$ 25.83
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 5188.30
+Número de produtos: 15238
+------------------------------
+Cidade: Vilhena
+Preço médio: R$ 26.93
+Preço mínimo: R$ 0.65
+Preço máximo: R$ 5188.30
+Número de produtos: 15868
+------------------------------
+
+PRODUTOS MAIS CAROS (preço médio):
+--------------------------------------------------
+Produto: Geladeira Consul Frost Free Duplex 386L com Altura Flex Inox
+Preço médio: R$ 5188.30
+------------------------------
+Produto: Smart TV LG NanoCell NANO77 55'' 4K
+Preço médio: R$ 5179.85
+------------------------------
+Produto: Máquina de Lavar Brastemp Branca 17Kg 127V
+Preço médio: R$ 4011.70
+------------------------------
+Produto: Smart TV 65'' LED TCL Classic 4K
+Preço médio: R$ 3798.80
+------------------------------
+Produto: Smart TV 55'' LED TCL S61 Google TV 4K
+Preço médio: R$ 3544.75
+------------------------------
+Produto: Smart TV 50'' LED TCL S61 Google TV 4K
+Preço médio: R$ 3163.15
+------------------------------
+Produto: Máquina de Lavar Consul Branca com Modo Eco 127V 13kg
+Preço médio: R$ 3131.99
+------------------------------
+Produto: Smartphone Infinix Note 40 5G 8GB RAM 256GB Câmera Tripla Preto Obsidiana
+Preço médio: R$ 3054.35
+------------------------------
+Produto: Smart TV 50'' LED TCL Classic 4K
+Preço médio: R$ 2984.10
+------------------------------
+Produto: Smart TV 43'' LED TCL S5400A FHD Android TV
+Preço médio: R$ 2508.45
+------------------------------
+Produto: Caixa de Som Pulse Torre Double 12 Pol. 2300W Bluetooth
+Preço médio: R$ 2405.30
+------------------------------
+Produto: Máquina de Lavar Mueller Ultracentrifugação MLA13 13kg
+Preço médio: R$ 1898.98
+------------------------------
+Produto: Hoverboard Fun LED 2.0 Atrio
+Preço médio: R$ 1795.75
+------------------------------
+Produto: Caixa de Som Pulse Torre Double 1800W RMS
+Preço médio: R$ 1763.40
+------------------------------
+Produto: Smartphone Infinix Preto Hot 40i 8GB RAM 256GB
+Preço médio: R$ 1758.50
+------------------------------
+Produto: Bicicleta Colli Toronto Preto e Laranja Aro 29 Freio a Discor 21 Marchas
+Preço médio: R$ 1750.45
+------------------------------
+Produto: Whisky Royal Salute Malt Ed 750ml
+Preço médio: R$ 1703.10
+------------------------------
+Produto: Whisky Royal Salute 21 Anos Garrafa 700ml The Miami Polo Edition
+Preço médio: R$ 1703.10
+------------------------------
+Produto: Smart TV 32'' LED TCL S5400AF FHD Android TV
+Preço médio: R$ 1681.95
+------------------------------
+Produto: Bicicleta Lotus Aro 29 Al Nitro Preto e Rosa com Marcha
+Preço médio: R$ 1575.55
+------------------------------
+
+PRODUTOS MAIS BARATOS (preço médio):
+--------------------------------------------------
+Produto: Refresco em Pó Fresh Laranja Pacote 15g
+Preço médio: R$ 1.06
+------------------------------
+Produto: Palito de Dente Paraná contém 100 Unidades
+Preço médio: R$ 0.99
+------------------------------
+Produto: Drops Icekiss Tentação Melão
+Preço médio: R$ 0.99
+------------------------------
+Produto: Refresco em Pó Fructus Salada de Fruta 15g
+Preço médio: R$ 0.99
+------------------------------
+Produto: Drops Icekiss Extra Forte Unidade
+Preço médio: R$ 0.99
+------------------------------
+Produto: Refresco em Pó Fructus Manga 15g
+Preço médio: R$ 0.99
+------------------------------
+Produto: Refresco em Pó Fructus Maracujá 15g
+Preço médio: R$ 0.99
+------------------------------
+Produto: Refresco em Pó Fructus Morango 15g
+Preço médio: R$ 0.99
+------------------------------
+Produto: Refresco em Pó Fructus Goiaba 15g
+Preço médio: R$ 0.99
+------------------------------
+Produto: Refresco em Pó Fructus Abacaxi 15g
+Preço médio: R$ 0.99
+------------------------------
+Produto: Drops Icekiss Morango Unidade
+Preço médio: R$ 0.99
+------------------------------
+Produto: Drops Icekiss Menta Unidade
+Preço médio: R$ 0.99
+------------------------------
+Produto: Drops Icekiss Azedinha Uva Unidade
+Preço médio: R$ 0.99
+------------------------------
+Produto: Bombom Bon o Bon Brigadeiro Unidade
+Preço médio: R$ 0.98
+------------------------------
+Produto: Bombom Bon o Bon Morango e Creme Unidade
+Preço médio: R$ 0.98
+------------------------------
+Produto: Palito de Dente Gaboardi Preimium de Bambum 80 Unidades
+Preço médio: R$ 0.90
+------------------------------
+Produto: Palito de Dente Gaboardi de Madeira 80 Unidades
+Preço médio: R$ 0.80
+------------------------------
+Produto: Pão Francês IG 1 Unid. Aprox.60g
+Preço médio: R$ 0.78
+------------------------------
+Produto: Chicle de Bola Toffano Guds Boll 18g
+Preço médio: R$ 0.75
+------------------------------
+Produto: Pipoca Doce Ouropã 15g
+Preço médio: R$ 0.65
+------------------------------
