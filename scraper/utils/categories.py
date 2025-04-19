@@ -15,9 +15,9 @@ def fetch(url, cookies=None, max_retries=6, initial_delay=10):
             with requests.get(url, headers=HEADERS, cookies=cookies) as response:
                 if response.status_code == 200:
                     return response.content
-                if response.status_code in (202, 429):
-                    delay = initial_delay * (2**attempt)
-                    logging.warning(f"Status {response.status_code} recebido. Aguardando {delay} segundos.")
+
+                delay = initial_delay * (2**attempt)
+                logging.warning(f"Status {response.status_code} recebido. Aguardando {delay} segundos.")
 
                 time.sleep(delay)
     except requests.RequestException:

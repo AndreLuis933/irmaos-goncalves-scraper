@@ -81,7 +81,7 @@ class HistoricoPreco(Base):
     __tablename__ = "historico_precos"
     id = Column(Integer, primary_key=True, autoincrement=True)
     produto_id = Column(Integer, ForeignKey("produtos.id"), nullable=False)
-    cidade_id = Column(Integer, ForeignKey("cidades.id"), nullable=True)
+    cidade_id = Column(Integer, ForeignKey("cidades.id"), nullable=False, default=1, server_default="1")
     preco = Column(Float(precision=2), nullable=False)
     data_atualizacao = Column(
         Date,
@@ -126,5 +126,5 @@ def init_db():
     Base.metadata.create_all(ENGINE)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" or DATABASE_TYPE == "sqlite":
     init_db()

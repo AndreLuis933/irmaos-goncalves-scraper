@@ -15,6 +15,14 @@ def set_cidades(cidades):
 
     """
     with Session() as session:
+        tabela_vazia = session.query(Cidade).count() == 0
+
+        # Se a tabela estiver vazia, adiciona "Sem Cidade" primeiro
+        if tabela_vazia:
+            sem_cidade = Cidade(nome="Sem Cidade")
+            session.add(sem_cidade)
+            session.commit()
+
         # Busca as cidades existentes
         cidades_existentes = {cidade.nome for cidade in session.query(Cidade).all()}
 
@@ -43,30 +51,31 @@ def get_image_links():
         )
         return [imagem.link_imagem for imagem in imagens]
 
+
 def save_disponibilidade(dados):
-    with Session() as session:
-        session.add_all(dados)
-        session.commit()
-
-
-def save_price(dados):
     if not dados:
         return
     try:
         with Session() as session:
             hoje = datetime.now(timezone.utc).date()
-
-            # Extrair links e criar mapeamento produtos
-            links = [link for link, _ in dados]
+            links = [produto[1] for produtos in dados for produto in produtos[0]]
+            cidades = [cidade[2] for cidade in dados]
             link_to_id = {
                 p.link: p.id for p in session.query(Produto.id, Produto.link).filter(Produto.link.in_(links)).all()
             }
+            cidade_to_id = {
+                c.nome: c.id for c in session.query(Cidade.id, Cidade.nome).filter(Cidade.nome.in_(cidades)).all()
+            }
 
-            # Preparar dados para inserção
             valores_para_inserir = [
-                {"produto_id": link_to_id.get(link), "preco": preco, "data_atualizacao": hoje}
-                for link, preco in dados
-                if link_to_id.get(link)
+                {
+                    "produto_id": link_to_id.get(produto[1]),
+                    "cidade_id": cidade_to_id.get(cidade),
+                    "data_disponibilidade": hoje,
+                }
+                for produtos, _, cidade in dados
+                for produto in produtos
+                if link_to_id.get(produto[1])
             ]
 
             if not valores_para_inserir:
@@ -78,8 +87,79 @@ def save_price(dados):
             if dialect == "postgresql":
                 from sqlalchemy.dialects.postgresql import insert
 
+                stmt = insert(DisponibilidadeCidade).values(valores_para_inserir)
+                stmt = stmt.on_conflict_do_nothing(index_elements=["produto_id", "cidade_id", "data_disponibilidade"])
+                result = session.execute(stmt)
+                session.commit()
+                logging.info(f"{result.rowcount} registros de produtos disponives salvos com sucesso.")
+            else:
+                # Versão para outros bancos
+                table = DisponibilidadeCidade.__table__
+                for valor in valores_para_inserir:
+                    stmt = table.insert().prefix_with("OR IGNORE").values(valor)
+                    session.execute(stmt)
+
+                logging.info("Registros de produtos disponives salvos com sucesso.")
+
+                session.commit()
+
+    except Exception as e:
+        session.rollback()
+        logging.info(f"Erro ao salvar registros de produtos disponives: {e}")
+
+
+def save_price(lista_uniforme, lista_variavel):
+    if not lista_uniforme:
+        return
+    try:
+        with Session() as session:
+            hoje = datetime.now(timezone.utc).date()
+
+            # Extrair links e criar mapeamento produtos
+            links = [link for link, _ in lista_uniforme]
+            link_to_id = {
+                p.link: p.id for p in session.query(Produto.id, Produto.link).filter(Produto.link.in_(links)).all()
+            }
+
+            # Preparar dados para inserção
+            valores_para_inserir = [
+                {"produto_id": link_to_id.get(link), "preco": preco, "data_atualizacao": hoje}
+                for link, preco in lista_uniforme
+                if link_to_id.get(link)
+            ]
+
+            cidades = [cidade for _, _, cidade in lista_variavel]
+            links = [link for link, _, _ in lista_variavel]
+            link_to_id = {
+                p.link: p.id for p in session.query(Produto.id, Produto.link).filter(Produto.link.in_(links)).all()
+            }
+            cidade_to_id = {
+                c.nome: c.id for c in session.query(Cidade.id, Cidade.nome).filter(Cidade.nome.in_(cidades)).all()
+            }
+            valores_para_inserir.extend(
+                [
+                    {
+                        "produto_id": link_to_id.get(link),
+                        "cidade_id": cidade_to_id.get(cidade),
+                        "preco": preco,
+                        "data_atualizacao": hoje,
+                    }
+                    for link, preco, cidade in lista_variavel
+                    if link_to_id.get(link)
+                ],
+            )
+
+            if not valores_para_inserir:
+                logging.info("Nenhum produto válido para inserir.")
+                return
+
+            dialect = session.bind.dialect.name
+
+            if dialect == "postgresql":
+                from sqlalchemy.dialects.postgresql import insert
+
                 stmt = insert(HistoricoPreco).values(valores_para_inserir)
-                stmt = stmt.on_conflict_do_nothing(index_elements=["produto_id", "data_atualizacao"])
+                stmt = stmt.on_conflict_do_nothing(index_elements=["produto_id", "cidade_id", "data_atualizacao"])
                 result = session.execute(stmt)
                 session.commit()
                 logging.info(f"{result.rowcount} registros de preços salvos com sucesso.")
@@ -91,6 +171,7 @@ def save_price(dados):
                     session.execute(stmt)
 
                 session.commit()
+                logging.info("Registros de preços salvos com sucesso.")
 
     except Exception as e:
         session.rollback()
@@ -99,6 +180,7 @@ def save_price(dados):
 
 def save_product(dados):
     if not dados:
+        logging.info("Nenhum produto valido para inserir.")
         return
 
     try:
@@ -260,69 +342,3 @@ def price_change():
     #     print("--------------------")
     logging.info(f"Total de produtos com mudança de preço: {len(mudancas)}")
 
-
-def save_images1(dados):
-    """Processa dados de imagens, atualizando ou criando registros no banco de dados.
-
-    Parâmetros:
-    - dados (list of tuple): Lista de tuplas com (link, conteudo), onde `conteudo` pode ser bytes para atualizar imagens
-    existentes ou int para criar novas com `produto_id`.
-
-    """
-    try:
-        with Session() as session:
-            objetos = []
-            for conteudo, link in dados:
-                if isinstance(conteudo, bytes):
-                    imagem = session.query(Imagem).filter_by(link_imagem=link).first()
-                    imagem.conteudo = conteudo
-                elif isinstance(conteudo, int):
-                    objetos.append(Imagem(produto_id=conteudo, link_imagem=link))
-
-            session.bulk_save_objects(objetos)
-            session.commit()
-            logging.info(f"{len(objetos)} registros de imagens salvos ou atualizados com sucesso.")
-    except Exception as e:
-        session.rollback()
-        logging.info(f"Erro ao salvar registros de imagens exexeçao {e}")
-
-
-def save_price1(dados):
-    try:
-        with Session() as session:
-            hoje = datetime.now(timezone.utc).date()
-
-            # Extrair links e criar mapeamento produtos
-            links = [link for link, _ in dados]
-            link_to_id = {
-                p.link: p.id for p in session.query(Produto.id, Produto.link).filter(Produto.link.in_(links)).all()
-            }
-
-            # Obter IDs de produtos que já têm registros hoje
-            produtos_com_registro = {
-                r.produto_id
-                for r in session.query(HistoricoPreco.produto_id)
-                .filter(
-                    HistoricoPreco.produto_id.in_(list(link_to_id.values())),
-                    HistoricoPreco.data_atualizacao == hoje,
-                )
-                .all()
-            }
-
-            # Criar objetos para inserção, filtrando produtos não encontrados e já registrados
-            objetos = [
-                HistoricoPreco(produto_id=link_to_id.get(link), preco=preco, data_atualizacao=hoje)
-                for link, preco in dados
-                if link_to_id.get(link) and link_to_id.get(link) not in produtos_com_registro
-            ]
-
-            if objetos:
-                session.bulk_save_objects(objetos)
-                session.commit()
-                logging.info(f"{len(objetos)} registros de preços salvos com sucesso.")
-            else:
-                logging.info("Nenhum novo registro de preço para salvar hoje.")
-
-    except Exception as e:
-        session.rollback()
-        logging.info(f"Erro ao salvar registros de preços: {e}")

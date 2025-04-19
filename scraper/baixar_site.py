@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import time
+from collections import defaultdict
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -9,6 +10,7 @@ from database.db_operations import (
     execute_today,
     get_null_product_category,
     price_change,
+    save_disponibilidade,
     save_price,
     save_product,
     set_cidades,
@@ -65,7 +67,6 @@ async def baixar_site():
     inicio1 = time.time()
     cookies = load_cookie("requests")
     set_cidades([cidade for cidade, _ in cookies])
-    return
 
     url_base = "https://www.irmaosgoncalves.com.br"
     urls_folha, urls_raiz, categorias = get_categories(url_base)
@@ -90,24 +91,42 @@ async def baixar_site():
 
     with open("dados_produtos.pickle", "wb") as arquivo:
         pickle.dump(resultados, arquivo)
-    # [([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade), ([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade)]
-    # separa as listas que estavam assim [(produtos, precos,cidade), (produtos, precos,cidade)] para uma com todos os produtos e outra com todos os preços  # noqa: E501
-    produtos_para_salvar = [produto for produtos, _ in resultados for produto in produtos]
-    precos_para_salvar = [preco for _, precos in resultados for preco in precos]
 
-    inicio = time.time()
+    # [([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade), ([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade)]  # noqa: E501
+
+    produtos_para_salvar = list(
+        {
+            produto[1]: produto  # Usa o link como chave
+            for item in resultados
+            for produto in item[0]
+        }.values(),
+    )
+
+    mapeamento_links = defaultdict(list)
+
+    for _, links_precos, cidade in resultados:
+        for link, preco in links_precos:
+            mapeamento_links[link].append((preco, cidade))
+
+    lista_uniforme = []  # [link, preco]
+    lista_variavel = []  # [link, preco, cidade]
+
+    for link, precos_cidades in mapeamento_links.items():
+        primeiro_preco = precos_cidades[0][0]
+        if all(preco == primeiro_preco for preco, _ in precos_cidades[1:]):
+            lista_uniforme.append([link, primeiro_preco])
+        else:
+            lista_variavel.extend([link, preco, cidade] for preco, cidade in precos_cidades)
+
+    # produtos
     save_product(produtos_para_salvar)
-    fim = time.time()
-    logging.info(f"Tempo de execução dos produtos: {fim - inicio:.2f} segundos.")
 
-    inicio = time.time()
-    save_price(precos_para_salvar)
-    fim = time.time()
-    logging.info(f"Tempo de execução dos preços: {fim - inicio:.2f} segundos.")
+    save_price(lista_uniforme, lista_variavel)
+
+    save_disponibilidade(resultados)
 
     fim1 = time.time()
-    logging.info(f"Tempo de execução dos total: {fim1 - inicio1:.2f} segundos.")
-    print(len(produtos_para_salvar))
+    logging.info(f"Tempo de execução dos total: {(fim1 - inicio1) / 60:.2f} minutos.")
 
     # ver quantos produtos mudaram de preço desde a primeira execução
     price_change()
