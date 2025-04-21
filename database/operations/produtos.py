@@ -1,0 +1,50 @@
+import logging
+
+from database.connection import Session
+from database.models import Produto
+
+from .utils import gerenciador_transacao
+
+
+@gerenciador_transacao
+def salvar_produto(session, produtos):
+    """Salva ou atualiza produtos no banco."""
+    if not produtos:
+        logging.info("Nenhum produto válido para inserir.")
+        return
+
+    links_recebidos = {p.link for p in produtos}
+    produtos_atuais = {p.link: p for p in session.query(Produto).filter(Produto.link.in_(links_recebidos)).all()}
+
+    links_para_inserir = links_recebidos - produtos_atuais.keys()
+    links_para_atualizar = links_recebidos.intersection(produtos_atuais.keys())
+    produtos_para_inserir = []
+
+    for produto_info in produtos:
+        if produto_info.link in links_para_inserir:
+            produtos_para_inserir.append(
+                Produto(nome=produto_info.nome, link=produto_info.link, categoria=produto_info.categoria),
+            )
+        elif produto_info.link in links_para_atualizar:
+            produto_atual = produtos_atuais[produto_info.link]
+            if produto_atual.nome != produto_info.nome or (
+                produto_info.categoria and produto_atual.categoria != produto_info.categoria
+            ):
+                produto_atual.nome = produto_info.nome
+                if produto_info.categoria:
+                    produto_atual.categoria = produto_info.categoria
+
+    if produtos_para_inserir:
+        session.bulk_save_objects(produtos_para_inserir)
+
+    logging.info(f"{len(links_recebidos)} produtos atualizados ou inseridos com sucesso.")
+
+
+def get_link_produto():
+    with Session() as session:
+        return session.query(Produto).all()
+
+
+def get_null_product_category():
+    with Session() as session:
+        return session.query(Produto).filter(Produto.categoria.is_(None)).count()

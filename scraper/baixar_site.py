@@ -1,18 +1,19 @@
 import asyncio
 import logging
 import time
-from collections import defaultdict
 
 import aiohttp
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
-from database.db_operations import (
+from database import (
     execute_today,
     get_null_product_category,
     price_change,
-    save_disponibilidade,
-    save_price,
-    save_product,
+    processar_dados_brutos,
+    salvar_disponibilidade,
+    salvar_preco,
+    salvar_produto,
     set_cidades,
 )
 from scraper.utils.categories import get_categories
@@ -41,12 +42,12 @@ def verificar_tamanhos(nome, preco, link):
         raise ValueError(msg)
 
 
-async def process_url(session, url, cookies, categoria, cidade):
-    content = await fetch_async(session, url, cookies)
+async def process_url(session, url, cookies, categoria, cidade, pbar):
+    content = await fetch_async(session, url, cookies, pbar)
     if not content:
-        return [], []
+        return [], [], cidade
 
-    logging.info("%s - %s", cidade, url.split("?")[0].split("/")[-1])
+    #logging.info("%s - %s", cidade, url.split("?")[0].split("/")[-1])
     soup = BeautifulSoup(content, "html.parser")
     nome_prod, preco, link = extrair_dados(soup)
 
@@ -74,56 +75,41 @@ async def baixar_site():
 
     # se tiver menos de 100 produtos sem categoria baixar os produtos sem a categoria para ir mais rapido
     logging.info(f"Produtos sem categoria: {get_null_product_category()}")
-    if get_null_product_category() < 10000000:
+    if get_null_product_category() < 100000000:
         urls = urls_raiz
         categorias = len(urls) * [None]
 
     # fazer as requests de forma assíncrona
     async with aiohttp.ClientSession() as session:
-        tasks = [
-            process_url(session, url, cookie, categoria, cidade)
-            for url, categoria in zip(urls, categorias)
-            for cidade, cookie in cookies
-        ]
-        resultados = await asyncio.gather(*tasks)
-
-    import pickle
-
-    with open("dados_produtos.pickle", "wb") as arquivo:
-        pickle.dump(resultados, arquivo)
+        with tqdm(total=len(urls)*len(cookies), desc="Progresso") as pbar:
+            tasks = [
+                process_url(session, url, cookie, categoria, cidade, pbar)
+                for url, categoria in zip(urls, categorias)
+                for cidade, cookie in cookies
+            ]
+            resultados_brutos = await asyncio.gather(*tasks)
 
     # [([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade), ([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade)]  # noqa: E501
+    fim = time.time()
+    logging.info(f"Tempo de execução do process_url: {(fim - inicio1) / 60:.2f} minutos.")
 
-    produtos_para_salvar = list(
-        {
-            produto[1]: produto  # Usa o link como chave
-            for item in resultados
-            for produto in item[0]
-        }.values(),
-    )
+    inicio = time.time()
+    dados_processados = processar_dados_brutos(resultados_brutos)
+    fim = time.time()
+    logging.info(f"Tempo de execução dos processar_dados_brutos: {fim - inicio:.2f} segundos.")
 
-    mapeamento_links = defaultdict(list)
-
-    for _, links_precos, cidade in resultados:
-        for link, preco in links_precos:
-            mapeamento_links[link].append((preco, cidade))
-
-    lista_uniforme = []  # [link, preco]
-    lista_variavel = []  # [link, preco, cidade]
-
-    for link, precos_cidades in mapeamento_links.items():
-        primeiro_preco = precos_cidades[0][0]
-        if all(preco == primeiro_preco for preco, _ in precos_cidades[1:]):
-            lista_uniforme.append([link, primeiro_preco])
-        else:
-            lista_variavel.extend([link, preco, cidade] for preco, cidade in precos_cidades)
-
-    # produtos
-    save_product(produtos_para_salvar)
-
-    save_price(lista_uniforme, lista_variavel)
-
-    save_disponibilidade(resultados)
+    inicio = time.time()
+    salvar_produto(dados_processados.produtos)
+    fim = time.time()
+    logging.info(f"Tempo de execução dos produto: {fim - inicio:.2f} segundos.")
+    inicio = time.time()
+    salvar_preco(dados_processados.precos_uniformes, dados_processados.precos_variaveis)
+    fim = time.time()
+    logging.info(f"Tempo de execução dos preco: {fim - inicio:.2f} segundos.")
+    inicio = time.time()
+    salvar_disponibilidade(dados_processados.disponibilidades)
+    fim = time.time()
+    logging.info(f"Tempo de execução dos disponibilidade: {fim - inicio:.2f} segundos.")
 
     fim1 = time.time()
     logging.info(f"Tempo de execução dos total: {(fim1 - inicio1) / 60:.2f} minutos.")

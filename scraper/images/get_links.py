@@ -18,7 +18,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from tqdm import tqdm
 from urllib3.exceptions import ReadTimeoutError
 
-from database.db_operations import get_count_products_without_images, get_link_produto, images_id, save_images
+from database import get_count_products_without_images, get_link_produto, images_id, save_images
 from scraper.utils.categories import get_categories
 from scraper.utils.load_cookies import load_cookie
 

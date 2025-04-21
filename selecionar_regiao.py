@@ -13,20 +13,27 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 regioes = [
-    "Ariquemes", "Cacoal",  "Jaru", "Ji-Paraná",
-    "Ouro Preto do Oeste", "Porto Velho",
-    "Rolim de Moura", "Vilhena"
+    "Ariquemes",
+    "Cacoal",
+    "Jaru",
+    "Ji-Paraná",
+    "Ouro Preto do Oeste",
+    "Porto Velho",
+    "Rolim de Moura",
+    "Vilhena",
 ]
 
 questions = [
-    inquirer.List('regiao',
-                  message="Selecione uma região",
-                  choices=regioes,
-                  ),
+    inquirer.List(
+        "regiao",
+        message="Selecione uma região",
+        choices=regioes,
+    ),
 ]
 
 answers = inquirer.prompt(questions)
-regiao = answers['regiao']
+regiao = answers["regiao"]
+
 
 @contextmanager
 def suppress_output():
@@ -45,15 +52,11 @@ def suppress_output():
 
 with suppress_output():
     folder_path = "c:\\download2thisfolderchromedriver"
-    chromedriver_path = download_undetected_chromedriver(
-        folder_path, undetected=True, arm=False, force_update=True
-    )
+    chromedriver_path = download_undetected_chromedriver(folder_path, undetected=True, arm=False, force_update=True)
 
 
 options = uc.ChromeOptions()
-driver = uc.Chrome(
-    options=options, driver_executable_path=chromedriver_path, headless=False
-)
+driver = uc.Chrome(options=options, driver_executable_path=chromedriver_path, headless=False)
 driver.maximize_window()
 
 
@@ -76,8 +79,7 @@ df.loc[df.aa_localName == "select"].se_click.iloc[0]()
 # lista com as regioes ['Ariquemes', 'Cacoal', 'Jaru', 'Ji-Paraná', 'Ouro Preto do Oeste', 'Pimenta Bueno', 'Porto Velho', 'Rolim de Moura', 'Vilhena']
 
 df.loc[
-    (df.aa_localName == "option")
-    & (df.aa_innerText == regiao)  # pode ser alterado para a sua região
+    (df.aa_localName == "option") & (df.aa_innerText == regiao)  # pode ser alterado para a sua região
 ].se_click.iloc[0]()
 
 cookies = driver.get_cookies()
@@ -88,9 +90,7 @@ for cookie in cookies:
     if cookie.get("name") == "app":
         expiry = cookie.get("expiry")
 
-        readable_expiry = datetime.fromtimestamp(expiry, tz=timezone.utc).strftime(
-            "%Y-%m-%d %H:%M:%S UTC"
-        )
+        readable_expiry = datetime.fromtimestamp(expiry, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
         novo[cookie["name"]] = {
             "value": cookie.get("value"),

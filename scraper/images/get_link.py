@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
 from selenium.webdriver.support.wait import WebDriverWait
 
-from database.db_operations import get_dataframe, save_images
+from database import get_dataframe, save_images
 
 
 @contextmanager

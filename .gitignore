@@ -8,6 +8,8 @@ __pycache__/
 analize_teste.ipynb
 teste.ipynb
 
+# pikcle
+*.pkl
 
 # Environments
 .env
