@@ -5,12 +5,13 @@ from database.models import Produto
 
 from .utils import gerenciador_transacao
 
+logger = logging.getLogger(__name__)
 
 @gerenciador_transacao
 def salvar_produto(session, produtos):
     """Salva ou atualiza produtos no banco."""
     if not produtos:
-        logging.info("Nenhum produto válido para inserir.")
+        logger.info("Nenhum produto válido para inserir.")
         return
 
     links_recebidos = {p.link for p in produtos}
@@ -37,7 +38,7 @@ def salvar_produto(session, produtos):
     if produtos_para_inserir:
         session.bulk_save_objects(produtos_para_inserir)
 
-    logging.info(f"{len(links_recebidos)} produtos atualizados ou inseridos com sucesso.")
+    logger.info(f"{len(links_recebidos)} produtos atualizados ou inseridos com sucesso.")
 
 
 def get_link_produto():

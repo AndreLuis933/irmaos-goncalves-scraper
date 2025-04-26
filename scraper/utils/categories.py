@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 
 from scraper.config.requests import HEADERS
 
+logger = logging.getLogger(__name__)
 
 def fetch(url, cookies=None, max_retries=6, initial_delay=10):
     try:
@@ -17,14 +18,14 @@ def fetch(url, cookies=None, max_retries=6, initial_delay=10):
                     return response.content
 
                 delay = initial_delay * (2**attempt)
-                logging.warning(f"Status {response.status_code} recebido. Aguardando {delay} segundos.")
+                logger.warning(f"Status {response.status_code} recebido. Aguardando {delay} segundos.")
 
                 time.sleep(delay)
     except requests.RequestException:
-        logging.exception(f"Erro ao fazer requisição para {url}")
+        logger.exception(f"Erro ao fazer requisição para {url}")
         time.sleep(5)
 
-    logging.error(f"Falha após {max_retries} tentativas para {url}")
+    logger.error(f"Falha após {max_retries} tentativas para {url}")
     return None
 
 

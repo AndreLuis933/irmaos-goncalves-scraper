@@ -1,14 +1,4 @@
-from sqlalchemy import (
-    Column,
-    Date,
-    Float,
-    ForeignKey,
-    Index,
-    Integer,
-    LargeBinary,
-    String,
-    UniqueConstraint,
-)
+from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Index, Integer, LargeBinary, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -33,7 +23,9 @@ class Produto(Base):
     imagem = relationship("Imagem", back_populates="produto", uselist=False)
     historico_precos = relationship("HistoricoPreco", back_populates="produto", cascade="all, delete-orphan")
     disponibilidade_cidades = relationship(
-        "DisponibilidadeCidade", back_populates="produto", cascade="all, delete-orphan",
+        "DisponibilidadeCidade",
+        back_populates="produto",
+        cascade="all, delete-orphan",
     )
 
 
@@ -66,21 +58,20 @@ class HistoricoPreco(Base):
     produto_id = Column(Integer, ForeignKey("produtos.id"), nullable=False)
     cidade_id = Column(Integer, ForeignKey("cidades.id"), nullable=False, default=1, server_default="1")
     preco = Column(Float(precision=2), nullable=False)
-    data_atualizacao = Column(
+    data_inicio = Column(
         Date,
         default=func.current_date(),
         nullable=False,
     )
+    data_fim = Column(
+        Date,
+        nullable=True,
+    )
 
-    # Relacionamentos
     produto = relationship("Produto", back_populates="historico_precos")
     cidade = relationship("Cidade", back_populates="historico_precos")
 
-    __table_args__ = (
-        UniqueConstraint("produto_id", "cidade_id", "data_atualizacao", name="uq_produto_cidade_data"),
-        Index("idx_historico_data", data_atualizacao),
-        Index("idx_historico_produto_cidade", produto_id, cidade_id),
-    )
+    __table_args__ = (UniqueConstraint("produto_id", "cidade_id", "data_inicio", name="uq_historico_preco_periodo"),)
 
 
 class DisponibilidadeCidade(Base):
@@ -88,20 +79,22 @@ class DisponibilidadeCidade(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     produto_id = Column(Integer, ForeignKey("produtos.id"), nullable=False)
     cidade_id = Column(Integer, ForeignKey("cidades.id"), nullable=False)
-    data_disponibilidade = Column(
+    disponivel = Column(Boolean, nullable=False, default=True)
+    data_inicio = Column(
         Date,
         default=func.current_date(),
         nullable=False,
     )
+    data_fim = Column(
+        Date,
+        nullable=True,
+    )
 
-    # Relacionamentos
     produto = relationship("Produto", back_populates="disponibilidade_cidades")
     cidade = relationship("Cidade", back_populates="disponibilidades")
 
     __table_args__ = (
-        UniqueConstraint("produto_id", "cidade_id", "data_disponibilidade", name="uq_disponibilidade_cidade_data"),
-        Index("idx_disponibilidade_produto_data", produto_id, data_disponibilidade),
-        Index("idx_disponibilidade_cidade_data", cidade_id, data_disponibilidade),
+        UniqueConstraint("produto_id", "cidade_id", "data_inicio", name="uq_disponibilidade_cidade_periodo"),
     )
 
 

@@ -21,6 +21,7 @@ from .operations.produtos import get_link_produto, get_null_product_category, sa
 
 # Importa utilitários
 from .operations.utils import (
+    atualizar_em_lotes,
     execute_today,
     gerenciador_transacao,
     get_dataframe,
@@ -77,7 +78,7 @@ __all__ = [
     "set_cidades",
     "get_dataframe",
     # Utilitários
-    "gerenciador_transacao",
+    "atualizar_em_lotes", "gerenciador_transacao",
     "obter_data_atual",
     "obter_mapeamento_id",
     "inserir_com_conflito",

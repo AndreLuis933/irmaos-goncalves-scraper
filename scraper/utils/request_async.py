@@ -6,11 +6,9 @@ import aiohttp
 
 from scraper.config.requests import HEADERS
 
-max_concurrent_requests = 1500
-semaphore = asyncio.Semaphore(max_concurrent_requests)
+logger = logging.getLogger(__name__)
 
-
-def calculate_delay(attempt, base_delay=60, increment=30, max_delay=600, jitter_factor=0.1):
+def calculate_delay(attempt, base_delay=60, increment=30, max_delay=300, jitter_factor=0.1):
     delay = min(base_delay + (attempt * increment), max_delay)
     jitter = random.uniform(0, delay * jitter_factor)
     return delay + jitter
@@ -32,18 +30,18 @@ async def fetch_async(session, url, cookies=None, pbar=None,tipo="produtos", max
                     return await response.text()
                 if response.status == 503 and tipo == "imagens":
                     pbar.update(1)
-                    logging.warning(f"Status {response.status} nao fazer mais requesicoes para {url}")
+                    logger.warning(f"Status {response.status} nao fazer mais requesicoes para {url}")
                     return (None, None)
                 if attempt < max_retries:
                     delay = calculate_delay(attempt)
-                    #logging.warning(f"Status {response.status} recebido. Aguardando {delay:.2f} segundos.")
+                    #logger.warning(f"Status {response.status} recebido. Aguardando {delay:.2f} segundos.")
 
                     await asyncio.sleep(delay)
     except aiohttp.ClientError:
-        logging.exception(f"Erro ao fazer requisição para {url}")
+        logger.exception(f"Erro ao fazer requisição para {url}")
         await asyncio.sleep(5)
 
-    logging.error(f"Falha após {max_retries} tentativas para {url}")
+    logger.error(f"Falha após {max_retries} tentativas para {url}")
     pbar.update(1)
     if pbar:
         return (None, None)

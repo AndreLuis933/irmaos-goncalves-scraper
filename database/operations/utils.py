@@ -1,12 +1,14 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 
 import sqlalchemy
+from sqlalchemy import tuple_
 
 from database.connection import Session
-from database.models import HistoricoPreco
+from database.models import Produto
 
+logger = logging.getLogger(__name__)
 
 def gerenciador_transacao(func):
     @wraps(func)
@@ -17,24 +19,20 @@ def gerenciador_transacao(func):
                 session.commit()
                 return result
         except sqlalchemy.exc.IntegrityError:
-            if "session" in locals():
-                session.rollback()
-            logging.exception(f"Erro de integridade ao executar {func.__name__}: ")
+            session.rollback()
+            logger.exception(f"Erro de integridade ao executar {func.__name__}: ")
             return None
         except sqlalchemy.exc.SQLAlchemyError:
-            if "session" in locals():
-                session.rollback()
-            logging.exception(f"Erro de banco de dados ao executar {func.__name__}: ")
+            session.rollback()
+            logger.exception(f"Erro de banco de dados ao executar {func.__name__}: ")
             return None
         except ValueError:
-            if "session" in locals():
-                session.rollback()
-            logging.exception(f"Erro de validação em {func.__name__}: ")
+            session.rollback()
+            logger.exception(f"Erro de validação em {func.__name__}: ")
             return None
         except Exception:
-            if "session" in locals():
-                session.rollback()
-            logging.exception(f"Erro inesperado em {func.__name__}: ")
+            session.rollback()
+            logger.exception(f"Erro inesperado em {func.__name__}: ")
             raise
 
     return wrapper
@@ -42,7 +40,7 @@ def gerenciador_transacao(func):
 
 def inserir_com_conflito(session, tabela, valores, indices_conflito):
     if not valores:
-        logging.info("Nenhum valor para inserir.")
+        logger.info("Nenhum valor para inserir.")
         return 0
 
     dialect = session.bind.dialect.name
@@ -81,8 +79,25 @@ def obter_mapeamento_id(session, modelo, campo_chave, valores):
 
 def execute_today():
     with Session() as session:
-        hoje = obter_data_atual()
-        return session.query(HistoricoPreco).filter_by(data_atualizacao=hoje).first()
+        return session.query(Produto).filter_by(data_atualizacao=obter_data_atual()).first()
+
+
+def atualizar_em_lotes(session, pares, tabela, tamanho_lote=500):
+    hoje = obter_data_atual()
+    ontem = hoje - timedelta(days=1)
+    atualizacoes = 0
+    for i in range(0, len(pares), tamanho_lote):
+        lote_atual = pares[i : i + tamanho_lote]
+        rows = (
+            session.query(tabela)
+            .filter(
+                tuple_(tabela.produto_id, tabela.cidade_id).in_(lote_atual),
+                tabela.data_fim.is_(None),
+            )
+            .update({"data_fim": ontem}, synchronize_session=False)
+        )
+        atualizacoes += rows
+    return atualizacoes
 
 
 import pandas as pd

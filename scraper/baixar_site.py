@@ -20,6 +20,7 @@ from scraper.utils.categories import get_categories
 from scraper.utils.load_cookies import load_cookie
 from scraper.utils.request_async import fetch_async
 
+logger = logging.getLogger(__name__)
 
 def extrair_dados(soup):
     # Nomes e links dos produtos
@@ -47,7 +48,7 @@ async def process_url(session, url, cookies, categoria, cidade, pbar):
     if not content:
         return [], [], cidade
 
-    #logging.info("%s - %s", cidade, url.split("?")[0].split("/")[-1])
+    #logger.info("%s - %s", cidade, url.split("?")[0].split("/")[-1])
     soup = BeautifulSoup(content, "html.parser")
     nome_prod, preco, link = extrair_dados(soup)
 
@@ -62,7 +63,7 @@ async def process_url(session, url, cookies, categoria, cidade, pbar):
 async def baixar_site():
     # se ja execultou hoje, nao execultar novamente
     if execute_today():
-        logging.info(f"Ja executou hoje dia: {execute_today().data_atualizacao}")
+        logger.info(f"Ja executou hoje dia: {execute_today().data_atualizacao}")
         # return
 
     inicio1 = time.time()
@@ -74,7 +75,7 @@ async def baixar_site():
     urls = urls_folha
 
     # se tiver menos de 100 produtos sem categoria baixar os produtos sem a categoria para ir mais rapido
-    logging.info(f"Produtos sem categoria: {get_null_product_category()}")
+    logger.info(f"Produtos sem categoria: {get_null_product_category()}")
     if get_null_product_category() < 100000000:
         urls = urls_raiz
         categorias = len(urls) * [None]
@@ -89,30 +90,18 @@ async def baixar_site():
             ]
             resultados_brutos = await asyncio.gather(*tasks)
 
-    # [([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade), ([[nome,link,categoria],[nome,link,categoria]], [[link,preco],[link,preco]],cidade)]  # noqa: E501
-    fim = time.time()
-    logging.info(f"Tempo de execução do process_url: {(fim - inicio1) / 60:.2f} minutos.")
 
-    inicio = time.time()
     dados_processados = processar_dados_brutos(resultados_brutos)
-    fim = time.time()
-    logging.info(f"Tempo de execução dos processar_dados_brutos: {fim - inicio:.2f} segundos.")
 
-    inicio = time.time()
     salvar_produto(dados_processados.produtos)
-    fim = time.time()
-    logging.info(f"Tempo de execução dos produto: {fim - inicio:.2f} segundos.")
-    inicio = time.time()
+
     salvar_preco(dados_processados.precos_uniformes, dados_processados.precos_variaveis)
-    fim = time.time()
-    logging.info(f"Tempo de execução dos preco: {fim - inicio:.2f} segundos.")
-    inicio = time.time()
+
     salvar_disponibilidade(dados_processados.disponibilidades)
-    fim = time.time()
-    logging.info(f"Tempo de execução dos disponibilidade: {fim - inicio:.2f} segundos.")
+
 
     fim1 = time.time()
-    logging.info(f"Tempo de execução dos total: {(fim1 - inicio1) / 60:.2f} minutos.")
+    logger.info(f"Tempo de execução dos total: {(fim1 - inicio1) / 60:.2f} minutos.")
 
     # ver quantos produtos mudaram de preço desde a primeira execução
     price_change()

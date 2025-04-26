@@ -1,8 +1,9 @@
 import json
 import logging
-from pathlib import Path
 import urllib.parse
+from pathlib import Path
 
+logger = logging.getLogger(__name__)
 
 def load_cookie(formato="requests"):
     """Carrega cookies de um arquivo JSON e os formata para uso com Selenium ou Requests.
@@ -15,12 +16,12 @@ def load_cookie(formato="requests"):
 
     """
     if formato.lower() not in ["requests", "selenium"]:
-        logging.error(f"Formato inválido: {formato}. Use 'requests' ou 'selenium'.")
+        logger.error(f"Formato inválido: {formato}. Use 'requests' ou 'selenium'.")
         return None
 
     # Verificar se o arquivo existe
     if not Path("cookies.json").is_file() or not Path("cidades.json").is_file():
-        logging.error("Arquivo de cookies não encontrado: cookies.json")
+        logger.error("Arquivo de cookies não encontrado: cookies.json")
         return None
 
     with open("cookies.json") as file, open("cidades.json") as file2:
@@ -29,12 +30,12 @@ def load_cookie(formato="requests"):
             cookies_data = json.load(file)
             cidades_data = json.load(file2)
         except json.JSONDecodeError:
-            logging.exception("O arquivo cookies.json não contém JSON válido")
+            logger.exception("O arquivo cookies.json não contém JSON válido")
             return None
 
         # Verificar estrutura do JSON
         if "app" not in cookies_data or "value" not in cookies_data["app"]:
-            logging.error("Chave 'app' ou 'value' não encontrada no arquivo de cookies")
+            logger.error("Chave 'app' ou 'value' não encontrada no arquivo de cookies")
             return None
 
         if formato.lower() == "requests":

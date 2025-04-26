@@ -11,6 +11,9 @@ teste.ipynb
 # pikcle
 *.pkl
 
+#logs
+logs/
+
 # Environments
 .env
 .venv

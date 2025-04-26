@@ -8,7 +8,7 @@ load_dotenv()
 
 # Configuração da conexão
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///ProdutosIG.db")
-ENGINE = create_engine(DATABASE_URL)
+ENGINE = create_engine(DATABASE_URL, pool_pre_ping=True)
 Session = sessionmaker(bind=ENGINE)
 DATABASE_TYPE = ENGINE.dialect.name
 

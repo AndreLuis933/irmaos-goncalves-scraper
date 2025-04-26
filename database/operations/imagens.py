@@ -7,6 +7,7 @@ from database.models import Imagem, Produto
 
 from .utils import gerenciador_transacao
 
+logger = logging.getLogger(__name__)
 
 @gerenciador_transacao
 def save_images(session,dados):
@@ -51,7 +52,7 @@ def save_images(session,dados):
             contador = len(objetos)
 
     session.commit()
-    logging.info(f"{contador} registros de imagens salvos ou atualizados com sucesso.")
+    logger.info(f"{contador} registros de imagens salvos ou atualizados com sucesso.")
 
 
 def images_id():
