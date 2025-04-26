@@ -64,7 +64,7 @@ async def baixar_site():
     # se ja execultou hoje, nao execultar novamente
     if execute_today():
         logger.info(f"Ja executou hoje dia: {execute_today().data_atualizacao}")
-        # return
+        return
 
     inicio1 = time.time()
     cookies = load_cookie("requests")

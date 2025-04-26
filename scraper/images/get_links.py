@@ -150,17 +150,19 @@ def load_page(driver, url, max_retries=5):
             retries += 1
             logger.warning(f"Erro ao processar a página (tentativa {retries}/{max_retries}):")
 
-def load_element(driver,tipo, selector, max_retries=5):
+def load_element(driver, tipo, selector, max_retries=5):
     retries = 0
     while max_retries > retries:
         try:
             WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((tipo, selector)),
             )
-            break
-        except TimeoutException:
+            return True  # noqa: TRY300
+        except TimeoutException:  # noqa: PERF203
             retries += 1
             logger.warning(f"Timeout ao carregar a página (tentativa {retries}/{max_retries}):")
+
+    return False
 
 
 def process_page(driver, url, imagens, max_retries=5):

@@ -119,7 +119,7 @@ def verificar_mudancas_preco():
                 subquery.c.ultima_data,
             )
             .join(subquery, HistoricoPreco.produto_id == subquery.c.produto_id)
-            .filter(and_(HistoricoPreco.data_atualizacao.in_([subquery.c.primeira_data, subquery.c.ultima_data])))
+            .filter(and_(HistoricoPreco.data_inicio.in_([subquery.c.primeira_data, subquery.c.ultima_data])))
             .distinct()
         )
 

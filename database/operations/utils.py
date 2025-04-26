@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 from functools import wraps
+from zoneinfo import ZoneInfo
 
 import sqlalchemy
 from sqlalchemy import tuple_
@@ -64,7 +65,7 @@ def inserir_com_conflito(session, tabela, valores, indices_conflito):
 
 def obter_data_atual():
     """Retorna data atual em UTC."""
-    return datetime.now(timezone.utc).date()
+    return datetime.now(timezone.utc).astimezone(ZoneInfo("America/Cuiaba")).date()
 
 
 def obter_mapeamento_id(session, modelo, campo_chave, valores):
