@@ -34,4 +34,6 @@ def setup_logger(log_level=logging.INFO, log_dir="logs"):
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
     return logger

@@ -15,7 +15,7 @@ async def main():
     await baixar_site()  # pega os produtos e preços
     get_images() # conseguir a maior contidade de links de imagens
     # extrair_link_restante(20) # pega o restante dos links das imagens
-    # await baixar_imagem(20000) # faz o download das imagens
+    await baixar_imagem(20000) # faz o download das imagens
 
 
 if __name__ == "__main__":

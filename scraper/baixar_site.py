@@ -99,6 +99,8 @@ async def baixar_site():
 
     salvar_disponibilidade(dados_processados.disponibilidades)
 
+    logger.info(f"Produtos disponives: {len(dados_processados.disponibilidades)}")
+
 
     fim1 = time.time()
     logger.info(f"Tempo de execução dos total: {(fim1 - inicio1) / 60:.2f} minutos.")

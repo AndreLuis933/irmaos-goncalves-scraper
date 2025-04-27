@@ -1,16 +1,18 @@
 import logging
-
 from sqlalchemy import func, not_
 
-from database.connection import Session
+
+from database.connection import Session, SUPABASE_CLIENT
 from database.models import Imagem, Produto
 
 from .utils import gerenciador_transacao
 
+
 logger = logging.getLogger(__name__)
 
+
 @gerenciador_transacao
-def save_images(session,dados):
+def save_images(session, dados):
     if not dados:
         return
 
@@ -25,13 +27,21 @@ def save_images(session,dados):
         imagens = session.query(Imagem).filter(Imagem.link_imagem.in_(links)).all()
 
         # Criar mapeamento de link para imagem
-        imagens_por_link = {img.link_imagem: img for img in imagens}
+        imagens_por_link = {img.link_imagem: img.produto_id for img in imagens}
 
-        # Atualizar conteúdo em lote
+        import time
         for conteudo, link in dados:
-            if link in imagens_por_link:
-                imagens_por_link[link].conteudo = conteudo
-                contador += 1
+            try:
+                if link in imagens_por_link:
+                    SUPABASE_CLIENT.storage.from_("images").upload(
+                        file=conteudo,
+                        path=f"{imagens_por_link[link]}.jpg",
+                        file_options={"cache-control": "3600", "upsert": "true"},
+                    )
+                    contador += 1
+            except Exception:
+                logger.error(f"Erro ao atualizar imagem {link}")
+                time.sleep(10)
     else:
         produto_ids = [produto_id for produto_id, _ in dados]
 
@@ -51,7 +61,6 @@ def save_images(session,dados):
             session.bulk_save_objects(objetos)
             contador = len(objetos)
 
-    session.commit()
     logger.info(f"{contador} registros de imagens salvos ou atualizados com sucesso.")
 
 
@@ -70,11 +79,23 @@ def get_count_products_without_images():
 
 
 def get_image_links():
+    response = SUPABASE_CLIENT.storage.from_("images").list(
+        "",
+        {
+            "limit": 1000000,
+            "offset": 0,
+        },
+    )
+    ids = [int(r["name"].split(".")[0]) for r in response]
     with Session() as session:
         imagens = (
             session.query(Imagem)
-            .filter(Imagem.conteudo.is_(None))
-            .filter(not_(Imagem.link_imagem.like("%removebg-preview%")))
+            .filter(
+                Imagem.produto_id.notin_(ids),
+                not_(
+                    Imagem.link_imagem.like("%removebg-preview%"),
+                ),
+            )
             .all()
         )
         return [imagem.link_imagem for imagem in imagens]

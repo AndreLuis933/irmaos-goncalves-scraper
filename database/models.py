@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Index, Integer, LargeBinary, String, UniqueConstraint
+from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -33,7 +33,6 @@ class Imagem(Base):
     __tablename__ = "imagens"
     produto_id = Column(Integer, ForeignKey("produtos.id"), primary_key=True)
     link_imagem = Column(String(1024), nullable=False)
-    conteudo = Column(LargeBinary, nullable=True)
     data_atualizacao = Column(
         Date,
         default=func.current_date(),

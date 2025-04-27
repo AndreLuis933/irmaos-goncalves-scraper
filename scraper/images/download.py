@@ -15,7 +15,7 @@ async def baixar_imagem(linhas=20000):
     total_requests = get_image_links()[:linhas]
     async with aiohttp.ClientSession() as session:
         with tqdm(total=len(total_requests), desc="Progresso") as pbar:
-            tasks = [fetch_async(session, url, pbar=pbar) for url in total_requests]
+            tasks = [fetch_async(session, url, pbar=pbar, tipo="imagens") for url in total_requests]
             results = await asyncio.gather(*tasks)
 
     save_images([(content, url) for url, content in results])
