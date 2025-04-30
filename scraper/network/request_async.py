@@ -1,26 +1,20 @@
 import asyncio
 import logging
-import random
 
 import aiohttp
 
-from scraper.config.requests import HEADERS
+from scraper.config.request_config import HEADERS
+from scraper.utils.selenium_helpers import calculate_delay
 
 logger = logging.getLogger(__name__)
 
-def calculate_delay(attempt, base_delay=60, increment=30, max_delay=300, jitter_factor=0.1):
-    delay = min(base_delay + (attempt * increment), max_delay)
-    jitter = random.uniform(0, delay * jitter_factor)
-    return delay + jitter
 
-
-
-async def fetch_async(session, url, cookies=None, pbar=None,tipo="produtos", max_retries=25):
+async def fetch_async(session, url, cookies=None, pbar=None, tipo="produtos", max_retries=25):
     if cookies is None:
         cookies = {}
 
-    try:
-        for attempt in range(1, max_retries+1):
+    for attempt in range(1, max_retries + 1):
+        try:
             async with session.get(url, headers=HEADERS, cookies=cookies) as response:
                 if response.status == 200:
                     pbar.update(1)
@@ -34,12 +28,12 @@ async def fetch_async(session, url, cookies=None, pbar=None,tipo="produtos", max
                     return (None, None)
                 if attempt < max_retries:
                     delay = calculate_delay(attempt)
-                    #logger.warning(f"Status {response.status} recebido. Aguardando {delay:.2f} segundos.")
+                    # logger.warning(f"Status {response.status} recebido. Aguardando {delay:.2f} segundos.")
 
                     await asyncio.sleep(delay)
-    except aiohttp.ClientError:
-        logger.exception(f"Erro ao fazer requisição para {url}")
-        await asyncio.sleep(5)
+        except aiohttp.ClientError:  # noqa: PERF203
+            logger.exception(f"Erro ao fazer requisição para {url}")
+            await asyncio.sleep(delay)
 
     logger.error(f"Falha após {max_retries} tentativas para {url}")
     pbar.update(1)

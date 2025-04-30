@@ -16,9 +16,9 @@ from database import (
     salvar_produto,
     set_cidades,
 )
+from scraper.cookies.load_cookies import load_cookie
+from scraper.network.request_async import fetch_async
 from scraper.utils.categories import get_categories
-from scraper.utils.load_cookies import load_cookie
-from scraper.utils.request_async import fetch_async
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +64,12 @@ async def baixar_site():
     # se ja execultou hoje, nao execultar novamente
     if execute_today():
         logger.info(f"Ja executou hoje dia: {execute_today().data_atualizacao}")
-        return
+        #return
 
     inicio1 = time.time()
     cookies = load_cookie("requests")
+    print(cookies)
+    return
     set_cidades([cidade for cidade, _ in cookies])
 
     url_base = "https://www.irmaosgoncalves.com.br"
@@ -75,8 +77,8 @@ async def baixar_site():
     urls = urls_folha
 
     # se tiver menos de 100 produtos sem categoria baixar os produtos sem a categoria para ir mais rapido
-    logger.info(f"Produtos sem categoria: {get_null_product_category()}")
-    if get_null_product_category() < 100000000:
+    logger.info(f"Produtos sem categoria: {len(get_null_product_category())}")
+    if len(get_null_product_category()) < 10000:
         urls = urls_raiz
         categorias = len(urls) * [None]
 

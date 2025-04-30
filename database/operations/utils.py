@@ -1,15 +1,16 @@
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from functools import wraps
-from zoneinfo import ZoneInfo
 
 import sqlalchemy
 from sqlalchemy import tuple_
 
 from database.connection import Session
 from database.models import Produto
+from utils.data import obter_data_atual
 
 logger = logging.getLogger(__name__)
+
 
 def gerenciador_transacao(func):
     @wraps(func)
@@ -63,11 +64,6 @@ def inserir_com_conflito(session, tabela, valores, indices_conflito):
     return count
 
 
-def obter_data_atual():
-    """Retorna data atual em UTC."""
-    return datetime.now(timezone.utc).astimezone(ZoneInfo("America/Cuiaba")).date()
-
-
 def obter_mapeamento_id(session, modelo, campo_chave, valores):
     """Mapeia valores para IDs no banco de dados."""
     return {
@@ -99,12 +95,3 @@ def atualizar_em_lotes(session, pares, tabela, tamanho_lote=500):
         )
         atualizacoes += rows
     return atualizacoes
-
-
-import pandas as pd
-from database.connection import ENGINE
-
-
-def get_dataframe(query):
-    """Retorna um DataFrame do Pandas com os resultados da consulta SQL."""
-    return pd.read_sql_query(query, ENGINE)

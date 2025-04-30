@@ -3,6 +3,7 @@ seleniumpictures/
 __pycache__/
 .vscode
 .conda
+_____tmp.py
 
 # *ipynb
 analize_teste.ipynb

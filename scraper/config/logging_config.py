@@ -1,16 +1,18 @@
 import logging
 import os
-from datetime import datetime
+from pathlib import Path
+
+from utils.data import obter_data_atual
 
 
 # Configuração básica de logging
 def setup_logger(log_level=logging.INFO, log_dir="logs"):
     # Criar diretório de logs se não existir
-    if not os.path.exists(log_dir):
+    if not Path(log_dir).exists():
         os.makedirs(log_dir)
 
     # Definir nome do arquivo de log com data
-    log_filename = f"{datetime.now().strftime('%Y-%m-%d')}.log"
+    log_filename = f"{obter_data_atual()}.log"
     log_filepath = os.path.join(log_dir, log_filename)
 
     # Configurar o logger

@@ -7,6 +7,7 @@ from .utils import gerenciador_transacao
 
 logger = logging.getLogger(__name__)
 
+
 @gerenciador_transacao
 def salvar_produto(session, produtos):
     """Salva ou atualiza produtos no banco."""
@@ -48,4 +49,21 @@ def get_link_produto():
 
 def get_null_product_category():
     with Session() as session:
-        return session.query(Produto).filter(Produto.categoria.is_(None)).count()
+        return {produto.id for produto in session.query(Produto.id).filter(Produto.categoria.is_(None)).all()}
+
+
+def update_categoria(dados):
+    """Atualiza a categoria de múltiplos produtos no banco de dados.
+
+    Args:
+        dados: Lista de tuplas no formato (id_produto, categoria) contendo
+              o ID do produto e sua nova categoria.
+
+    """
+    with Session() as session:
+        for id_produto, categoria in dados:
+            produto = session.query(Produto).filter(Produto.id == id_produto).first()
+            produto.categoria = categoria
+
+        session.commit()
+        logger.info(f"{len(dados)} categorias de produtos atualizadas com sucesso.")

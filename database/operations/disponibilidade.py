@@ -1,8 +1,9 @@
 import logging
 
 from database.models import Cidade, DisponibilidadeCidade, Produto
+from utils.data import obter_data_atual
 
-from .utils import atualizar_em_lotes, gerenciador_transacao, obter_data_atual, obter_mapeamento_id
+from .utils import atualizar_em_lotes, gerenciador_transacao, obter_mapeamento_id
 
 logger = logging.getLogger(__name__)
 

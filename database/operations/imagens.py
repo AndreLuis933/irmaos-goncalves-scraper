@@ -1,12 +1,11 @@
 import logging
-from sqlalchemy import func, not_
 
+from sqlalchemy import func, not_, or_
 
-from database.connection import Session, SUPABASE_CLIENT
+from database.connection import SUPABASE_CLIENT, Session
 from database.models import Imagem, Produto
 
 from .utils import gerenciador_transacao
-
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +29,7 @@ def save_images(session, dados):
         imagens_por_link = {img.link_imagem: img.produto_id for img in imagens}
 
         import time
+
         for conteudo, link in dados:
             try:
                 if link in imagens_por_link:
@@ -99,3 +99,14 @@ def get_image_links():
             .all()
         )
         return [imagem.link_imagem for imagem in imagens]
+
+
+def get_produtos_sem_imagens(limite):
+    with Session() as session:
+        produtos = (
+            session.query(Produto.id, Produto.link)
+            .filter(or_(Produto.id.notin_(session.query(Imagem.produto_id)), Produto.categoria.is_(None)))
+            .limit(limite)
+            .all()
+        )
+        return {produto.link: produto.id for produto in produtos}
