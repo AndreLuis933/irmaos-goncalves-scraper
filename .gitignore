@@ -15,6 +15,9 @@ teste.ipynb
 #logs
 logs/
 
+# cookies
+cookies.json
+
 # Environments
 .env
 .venv

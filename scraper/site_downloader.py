@@ -9,7 +9,6 @@ from tqdm import tqdm
 from database import (
     execute_today,
     get_null_product_category,
-    price_change,
     processar_dados_brutos,
     salvar_disponibilidade,
     salvar_preco,
@@ -64,12 +63,10 @@ async def baixar_site():
     # se ja execultou hoje, nao execultar novamente
     if execute_today():
         logger.info(f"Ja executou hoje dia: {execute_today().data_atualizacao}")
-        #return
+        return
 
     inicio1 = time.time()
     cookies = load_cookie("requests")
-    print(cookies)
-    return
     set_cidades([cidade for cidade, _ in cookies])
 
     url_base = "https://www.irmaosgoncalves.com.br"
@@ -106,6 +103,3 @@ async def baixar_site():
 
     fim1 = time.time()
     logger.info(f"Tempo de execução dos total: {(fim1 - inicio1) / 60:.2f} minutos.")
-
-    # ver quantos produtos mudaram de preço desde a primeira execução
-    price_change()

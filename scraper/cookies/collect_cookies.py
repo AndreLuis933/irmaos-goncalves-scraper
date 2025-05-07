@@ -2,7 +2,6 @@ import io
 import json
 import logging
 from contextlib import redirect_stdout
-from pathlib import Path
 
 from cythonselenium import SeleniumFrame
 from selenium.webdriver.common.by import By
@@ -63,24 +62,16 @@ def load_city_page(driver, get_frame, city_name):
     df.loc[(df.aa_localName == "option") & (df.aa_innerText == city_name)].se_click.iloc[0]()
 
 
-def collect_cookies(output_file="cookies.json", *, overwrite=False):
+def collect_cookies(output_file="cookies.json"):
     """Coleta cookies para todas as cidades disponíveis no site.
 
     Args:
         output_file: Caminho para salvar o arquivo JSON de cookies
-        overwrite: Se True, sobrescreve o arquivo se já existir
-
-    Returns:
-        bool: True se os cookies foram coletados com sucesso, False caso contrário
 
     """
-    output_path = Path(output_file)
-    if output_path.exists() and not overwrite:
-        logger.error(f"Arquivo de cookies '{output_file}' já existe. Use overwrite=True para sobrescrever.")
-        return False
-
     descriptions = []
     cookie_collection = {"regions": {}}
+    logger.info("Coletando cookies...")
 
     with get_driver() as driver:
         get_frame = SeleniumFrame(
@@ -120,4 +111,3 @@ def collect_cookies(output_file="cookies.json", *, overwrite=False):
         json.dump(cookie_collection, json_file, ensure_ascii=False, indent=4)
 
     logger.info(f"Cookies coletados com sucesso e salvos em '{output_file}'")
-    return True

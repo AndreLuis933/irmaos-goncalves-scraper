@@ -13,9 +13,9 @@ logger = setup_logger(log_level=logging.INFO)
 
 async def main():
     await baixar_site()  # pega os produtos e preços
-    #get_images() # conseguir a maior contidade de links de imagens
-    #extrair_link_categoria_restante() # pega o restante dos links das imagens
-    #await baixar_imagem(20000) # faz o download das imagens
+    get_images() # conseguir a maior contidade de links de imagens
+    extrair_link_categoria_restante() # pega o restante dos links das imagens
+    await baixar_imagem(20000) # faz o download das imagens
 
 
 if __name__ == "__main__":
