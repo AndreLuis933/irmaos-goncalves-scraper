@@ -1,7 +1,6 @@
 from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 
 from .connection import ENGINE
 
@@ -16,8 +15,6 @@ class Produto(Base):
     categoria = Column(String(255), nullable=True)
     data_atualizacao = Column(
         Date,
-        default=func.current_date(),
-        onupdate=func.current_date(),
         nullable=False,
     )
     imagem = relationship("Imagem", back_populates="produto", uselist=False)
@@ -35,8 +32,6 @@ class Imagem(Base):
     link_imagem = Column(String(1024), nullable=False)
     data_atualizacao = Column(
         Date,
-        default=func.current_date(),
-        onupdate=func.current_date(),
         nullable=False,
     )
     produto = relationship("Produto", back_populates="imagem")
@@ -59,7 +54,6 @@ class HistoricoPreco(Base):
     preco = Column(Float(precision=2), nullable=False)
     data_inicio = Column(
         Date,
-        default=func.current_date(),
         nullable=False,
     )
     data_fim = Column(
@@ -81,7 +75,6 @@ class DisponibilidadeCidade(Base):
     disponivel = Column(Boolean, nullable=False, default=True)
     data_inicio = Column(
         Date,
-        default=func.current_date(),
         nullable=False,
     )
     data_fim = Column(

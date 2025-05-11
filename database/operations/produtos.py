@@ -2,6 +2,7 @@ import logging
 
 from database.connection import Session
 from database.models import Produto
+from utils.data import obter_data_atual
 
 from .utils import gerenciador_transacao
 
@@ -15,6 +16,8 @@ def salvar_produto(session, produtos):
         logger.info("Nenhum produto válido para inserir.")
         return
 
+    hoje = obter_data_atual()
+
     links_recebidos = {p.link for p in produtos}
     produtos_atuais = {p.link: p for p in session.query(Produto).filter(Produto.link.in_(links_recebidos)).all()}
 
@@ -25,10 +28,16 @@ def salvar_produto(session, produtos):
     for produto_info in produtos:
         if produto_info.link in links_para_inserir:
             produtos_para_inserir.append(
-                Produto(nome=produto_info.nome, link=produto_info.link, categoria=produto_info.categoria),
+                Produto(
+                    nome=produto_info.nome,
+                    link=produto_info.link,
+                    categoria=produto_info.categoria,
+                    data_atualizacao=hoje,
+                ),
             )
         elif produto_info.link in links_para_atualizar:
             produto_atual = produtos_atuais[produto_info.link]
+            produto_atual.data_atualizacao = hoje
             if produto_atual.nome != produto_info.nome or (
                 produto_info.categoria and produto_atual.categoria != produto_info.categoria
             ):
