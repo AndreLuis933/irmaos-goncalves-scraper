@@ -4,6 +4,7 @@ from sqlalchemy import func, not_, or_
 
 from database.connection import SUPABASE_CLIENT, Session
 from database.models import Imagem, Produto
+from utils.data import obter_data_atual
 
 from .utils import gerenciador_transacao
 
@@ -52,7 +53,7 @@ def save_images(session, dados):
 
         # Filtrar apenas produtos sem imagem
         objetos = [
-            Imagem(produto_id=produto_id, link_imagem=link)
+            Imagem(produto_id=produto_id, link_imagem=link, data_atualizacao=obter_data_atual())
             for produto_id, link in dados
             if produto_id not in produtos_com_imagem
         ]
