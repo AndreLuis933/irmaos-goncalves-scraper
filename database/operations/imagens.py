@@ -106,7 +106,7 @@ def get_produtos_sem_imagens(limite):
     with Session() as session:
         produtos = (
             session.query(Produto.id, Produto.link)
-            .filter(or_(Produto.id.notin_(session.query(Imagem.produto_id)), Produto.categoria.is_(None)))
+            .filter(Produto.id.notin_(session.query(Imagem.produto_id)))
             .limit(limite)
             .all()
         )

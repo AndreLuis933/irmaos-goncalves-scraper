@@ -23,7 +23,13 @@ from .operations.imagens import (
 from .operations.precos import price_change, salvar_preco, verificar_mudancas_preco
 
 # Importa operações de produtos
-from .operations.produtos import get_link_produto, get_null_product_category, salvar_produto, update_categoria
+from .operations.produtos import (
+    get_link_produto,
+    get_null_product_category,
+    get_produtos_sem_categoria,
+    salvar_produto,
+    update_categoria,
+)
 
 # Importa utilitários
 from .operations.utils import (
@@ -67,6 +73,7 @@ __all__ = [
     "get_image_links",
     "get_link_produto",
     "get_null_product_category",
+    "get_produtos_sem_categoria",
     "get_produtos_sem_imagens",
     "images_id",
     "init_db",
