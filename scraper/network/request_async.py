@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 async def fetch_async(session, url, cookies=None, pbar=None, tipo="produtos", max_retries=25):
     if cookies is None:
         cookies = {}
-
+    delay = calculate_delay(1)
     for attempt in range(1, max_retries + 1):
         try:
             async with session.get(url, headers=HEADERS, cookies=cookies) as response:

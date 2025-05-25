@@ -82,6 +82,8 @@ def extrair_link_categoria_restante(limite=1000):
 
     if len(produto_link_id) < 10:
         logger.info(f"Produtos sem imagens ou categorias: {len(produto_link_id)}")
+        logger.info("Pulando a extraçao de imagens.")
+        return
 
     with get_driver(headless=True) as driver, tqdm(total=len(produto_link_id), desc="Progresso") as pbar:
         logger.info("Iniciando extração de imagens...")

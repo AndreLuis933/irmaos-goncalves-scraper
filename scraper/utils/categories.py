@@ -36,9 +36,9 @@ def get_categories(url_base):
     for chave, subcategorias in categorias.items():
         if len(subcategorias) == 1:
             url = subcategorias[0]
-            urls_folha.append(urljoin(url_base, url + "?p=10000"))
+            urls_folha.append(urljoin(url_base, url + "?p=300"))
             nomes_arquivos.append(chave)
 
-    urls_base = [urljoin(url_base, f"/categoria/{raiz}?p=10000") for raiz in categorias_raiz]
+    urls_base = [urljoin(url_base, f"/categoria/{raiz}?p=300") for raiz in categorias_raiz]
 
     return urls_folha, urls_base, nomes_arquivos
