@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from database import (
+    close_gap,
     execute_today,
     get_null_product_category,
     processar_dados_brutos,
@@ -89,7 +90,7 @@ async def baixar_site():
             ]
             resultados_brutos = await asyncio.gather(*tasks)
 
-
+    close_gap()
     dados_processados = processar_dados_brutos(resultados_brutos)
 
     salvar_produto(dados_processados.produtos)

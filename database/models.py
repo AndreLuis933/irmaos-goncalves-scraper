@@ -90,6 +90,13 @@ class DisponibilidadeCidade(Base):
     )
 
 
+class LogExecucao(Base):
+    __tablename__ = "log_execucao"
+    data_execucao = Column(Date, primary_key=True)
+
+
+
+
 def init_db():
     """Inicializa o banco de dados criando todas as tabelas."""
     Base.metadata.create_all(ENGINE)

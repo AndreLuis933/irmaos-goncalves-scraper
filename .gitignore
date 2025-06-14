@@ -18,6 +18,9 @@ logs/
 # cookies
 cookies.json
 
+# workspace
+*.code-workspace
+
 # Environments
 .env
 .venv

@@ -1,8 +1,9 @@
 # Importa configurações de conexão
 from .connection import DATABASE_TYPE, ENGINE, Session
+from .gap import close_gap
 
 # Importa modelos do banco de dados
-from .models import Base, Cidade, DisponibilidadeCidade, HistoricoPreco, Imagem, Produto, init_db
+from .models import Base, Cidade, DisponibilidadeCidade, HistoricoPreco, Imagem, LogExecucao, Produto, init_db
 
 # Importa operações de cidades
 from .operations.cidades import set_cidades
@@ -61,12 +62,14 @@ __all__ = [
     "DisponibilidadeInfo",
     "HistoricoPreco",
     "Imagem",
+    "LogExecucao",
     "PrecoInfo",
     "PrecoVariavel",
     "Produto",
     "ProdutoInfo",
     "Session",
     "atualizar_em_lotes",
+    "close_gap",
     "execute_today",
     "gerenciador_transacao",
     "get_count_products_without_images",
