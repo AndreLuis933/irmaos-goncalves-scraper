@@ -3,10 +3,10 @@ from datetime import timedelta
 from functools import wraps
 
 import sqlalchemy
-from sqlalchemy import tuple_
+from sqlalchemy import desc, tuple_
 
 from database.connection import Session
-from database.models import Produto
+from database.models import LogExecucao
 from utils.data import obter_data_atual
 
 logger = logging.getLogger(__name__)
@@ -74,9 +74,12 @@ def obter_mapeamento_id(session, modelo, campo_chave, valores):
     }
 
 
-def execute_today():
-    with Session() as session:
-        return session.query(Produto).filter_by(data_atualizacao=obter_data_atual()).first()
+@gerenciador_transacao
+def last_execution(session):
+    ultima_data = session.query(LogExecucao.data_execucao).order_by(desc(LogExecucao.data_execucao)).first()
+    if ultima_data:
+        return ultima_data[0]
+    return None
 
 
 def atualizar_em_lotes(session, pares, tabela, tamanho_lote=500):

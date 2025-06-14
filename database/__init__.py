@@ -1,6 +1,6 @@
 # Importa configurações de conexão
 from .connection import DATABASE_TYPE, ENGINE, Session
-from .gap import close_gap
+from .gap import close_gap, log_execucao
 
 # Importa modelos do banco de dados
 from .models import Base, Cidade, DisponibilidadeCidade, HistoricoPreco, Imagem, LogExecucao, Produto, init_db
@@ -35,7 +35,7 @@ from .operations.produtos import (
 # Importa utilitários
 from .operations.utils import (
     atualizar_em_lotes,
-    execute_today,
+    last_execution,
     gerenciador_transacao,
     inserir_com_conflito,
     obter_mapeamento_id,
@@ -70,7 +70,7 @@ __all__ = [
     "Session",
     "atualizar_em_lotes",
     "close_gap",
-    "execute_today",
+    "last_execution",
     "gerenciador_transacao",
     "get_count_products_without_images",
     "get_image_links",
@@ -81,6 +81,7 @@ __all__ = [
     "images_id",
     "init_db",
     "inserir_com_conflito",
+    "log_execucao",
     "obter_mapeamento_id",
     "price_change",
     "processar_dados_brutos",
